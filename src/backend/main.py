@@ -2,6 +2,7 @@
     Application entry point
 """
 
+
 def _run_command():
     import importlib
     import sys
