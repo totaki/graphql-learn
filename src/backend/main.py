@@ -1,6 +1,9 @@
 """
     Application entry point
 """
+import tarantool
+
+from contextlib import AbstractContextManager
 
 
 def get_settings(settings_file='./settings.yml'):
@@ -13,9 +16,30 @@ def get_settings(settings_file='./settings.yml'):
 settings = get_settings()
 
 
-def prepare_db(tarantool_settings):
-    import tarantool
-    conn = tarantool.connect(tarantool_settings['host'], tarantool_settings['port'])
+class SyncTarantoolConnection(AbstractContextManager):
+
+    def __init__(self, host=None, port=None):
+        self._connection_args = (host, port)
+
+    @classmethod
+    def connect_from_settings(cls):
+        return cls(**settings['tarantool'])
+
+    def __enter__(self):
+        self._connection = tarantool.connect(*self._connection_args)
+        return self._connection
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._connection.close()
+
+
+def get_connection():
+    conn = tarantool.connect(settings['tarantool']['host'], settings['tarantool']['port'])
+    return conn
+
+
+def prepare_db():
+    conn = get_connection()
     with open('./db_scripts/init.lua') as f:
         execution = f.read()
     conn.eval(execution)
@@ -30,5 +54,5 @@ def _run_command():
 
 
 if __name__ == '__main__':
-    prepare_db(settings['tarantool'])
+    prepare_db()
     _run_command()
