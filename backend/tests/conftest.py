@@ -2,6 +2,7 @@ import os
 import pytest
 from store import JSONStore
 from schema import Schema
+from main import make_app
 
 
 @pytest.fixture
@@ -18,3 +19,7 @@ def store():
 def schema(store):
     return Schema(store)
 
+
+@pytest.fixture
+def app():
+    return make_app('config_test.yml')

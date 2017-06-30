@@ -6,3 +6,5 @@ secrets.py
 __pycache__
 *.xlog
 *.snap
+frontend
+graphql-ide
