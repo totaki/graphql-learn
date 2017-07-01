@@ -3,7 +3,7 @@ import pytest
 
 
 @pytest.mark.gen_test
-def test_create_and_get_task(http_client, base_url):
+def test_create_and_get_task(http_client, base_url, get_response_field):
     title = 'Title test'
     description = 'Create new task'
     create_body = f'''mutation {{
@@ -15,7 +15,7 @@ def test_create_and_get_task(http_client, base_url):
         }} 
     }}'''
     response = yield http_client.fetch(base_url + '/graphql', method='POST', body=create_body)
-    index = int(json.loads(response.body.decode('utf-8'))['createTask']['task']['id'])
+    index = get_response_field(response, 'createTask', 'task', 'id')
     get_body = f'''query {{ 
         task (id: {index}) {{
             title, description, status

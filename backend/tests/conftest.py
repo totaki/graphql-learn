@@ -1,4 +1,5 @@
 import os
+import json
 import pytest
 from store import JSONStore
 from schema import Schema
@@ -23,3 +24,13 @@ def schema(store):
 @pytest.fixture
 def app():
     return make_app('config_test.yml')
+
+
+@pytest.fixture
+def get_response_field():
+    def _(response, *args):
+        data = json.loads(response.body.decode('utf-8'))
+        for arg in args:
+            data = data[arg]
+        return data
+    return _
