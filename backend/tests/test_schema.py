@@ -6,7 +6,7 @@ def test_test_schema(schema):
 
 def test_get_task(schema):
     data = {'title': 'Title test', 'description': 'Description test', 'status': 0}
-    id = schema.store.create(data)
+    id = schema.store.task.create(data)
     result = schema.execute(f'''query {{ 
         task (id: {id}) {{
             title, description, status

@@ -32,8 +32,8 @@ class CreateTask(graphene.Mutation):
 
     @staticmethod
     def mutate(root, args, context, info):
-        index = context['store'].create(**args)
-        data = context['store'].get(index)
+        index = context['store'].task.create(**args)
+        data = context['store'].task.get(index)
         task = Task(status=Status.TODO, **data)
         ok = True
         return CreateTask(task=task, ok=ok)
@@ -41,6 +41,19 @@ class CreateTask(graphene.Mutation):
 
 class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
+
+
+class Board(graphene.ObjectType):
+
+    class Meta:
+        interfaces = (graphene.relay.Node,)
+
+    title = graphene.String(description='Board view name')
+    tasks = graphene.relay.ConnectionField(Task, description='All tasks for this board')
+
+    @classmethod
+    def get_node(cls, id, context, info):
+        return
 
 
 class Query(graphene.ObjectType):
@@ -53,7 +66,7 @@ class Query(graphene.ObjectType):
 
     def resolve_task(self, args, context, info) -> Task:
         id = args['id']
-        data = context['store'].get(id)
+        data = context['store'].task.get(id)
         return Task(**data)
 
 

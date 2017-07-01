@@ -22,6 +22,6 @@ def test_create_and_get_task(http_client, base_url, get_response_field):
         }} 
     }}'''
     response = yield http_client.fetch(base_url + '/graphql', method='POST', body=get_body)
-    task = json.loads(response.body.decode('utf-8'))['task']
+    task = get_response_field(response, 'task')
     assert task['description'] == description
 
