@@ -4,24 +4,11 @@ def test_test_schema(schema):
     assert result.data['test']
 
 
-def test_get_task(schema):
-    data = {'title': 'Title test', 'description': 'Description test', 'status': 0}
-    id = schema.store.task.create(data)
-    result = schema.execute(f'''query {{ 
-        task (id: {id}) {{
-            title, description, status
-        }} 
-    }}''')
-    assert result.errors is None
-    assert result.data['task']['title'] == data['title']
-    assert result.data['task']['description'] == data['description']
-
-
-def test_create_task(schema):
+def test_create_and_get_task(schema):
     title = 'Title test'
     description = 'Create new task'
     result = schema.execute(f'''mutation {{
-        createTask (data: {{title: "{title}", description: "{description}" }}) {{
+        createTask (input: {{title: "{title}", description: "{description}", clientMutationId:"abc" }}) {{
             ok,
             task {{
                 id
@@ -31,11 +18,14 @@ def test_create_task(schema):
     assert result.errors is None
     assert result.data['createTask']['ok'] == True
     id = result.data['createTask']['task']['id']
-    result = schema.execute(f'''query {{ 
-        task (id: {id}) {{
-            title, description, status
+    result = schema.execute(f'''query {{
+        node (id : "{id}") {{
+            id
+            ... on Task {{
+                title, description, status
+            }}
         }} 
     }}''')
     assert result.errors is None
-    assert result.data['task']['description'] == description
+    assert result.data['node']['description'] == description
 

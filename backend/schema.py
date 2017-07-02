@@ -11,28 +11,35 @@ class Status(graphene.Enum):
 
 class Task(graphene.ObjectType):
 
-    id = graphene.String()
     title = graphene.String()
     description = graphene.String()
     status = Status()
+    # board = graphene.Int()
+
+    class Meta:
+        interfaces = (graphene.relay.Node,)
+
+    @classmethod
+    def get_node(cls, id, context, info):
+        data = context['store'].task.get(id)
+        return Task(**data)
 
 
-class TaskInput(graphene.InputObjectType):
-    title = graphene.String()
-    description = graphene.String()
-
-
-class CreateTask(graphene.Mutation):
+class CreateTask(graphene.relay.ClientIDMutation):
 
     class Input:
-        data = graphene.Argument(TaskInput)
+        title = graphene.String()
+        description = graphene.String()
 
     ok = graphene.Boolean()
     task = graphene.Field(lambda: Task)
 
-    @staticmethod
-    def mutate(root, args, context, info):
-        index = context['store'].task.create(**args)
+    @classmethod
+    def mutate_and_get_payload(cls, args, context, info):
+        index = context['store'].task.create({
+            'title': args.get('title'),
+            'description': args.get('description')}
+        )
         data = context['store'].task.get(index)
         task = Task(status=Status.TODO, **data)
         ok = True
@@ -53,21 +60,28 @@ class Board(graphene.ObjectType):
 
     @classmethod
     def get_node(cls, id, context, info):
-        return
+        data = context['store'].board.create(id)
+        tasks = filter(lambda t: t['board'] == id, context['store'].task.all())
+        return Board(id=id, tasks=[t['id'] for t in tasks], **data)
+
+    def resolve_tasks(self, args, context, info):
+        tasks = [context['store'].task.get(t) for t in self.tasks]
+        return [Task(**data) for data in tasks]
 
 
 class Query(graphene.ObjectType):
 
     test = graphene.Boolean()
-    task = graphene.Field(Task, id=graphene.Int())
+    # board = graphene.Field(Board, id=graphene.Int())
+    node = graphene.relay.Node.Field()
 
     def resolve_test(self, args, context, info) -> bool:
         return True
 
-    def resolve_task(self, args, context, info) -> Task:
-        id = args['id']
-        data = context['store'].task.get(id)
-        return Task(**data)
+    # def resolve_board(self, args, context, info) -> Task:
+    #     id = args['id']
+    #     data = context['store'].board.get(id)
+    #     return Board(**data)
 
 
 class Schema:
