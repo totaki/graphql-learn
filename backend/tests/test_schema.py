@@ -1,9 +1,3 @@
-def test_test_schema(schema):
-    result = schema.execute('query { test }')
-    assert not result.errors
-    assert result.data['test']
-
-
 def test_create_and_get_task(schema):
     title = 'Title test'
     description = 'Create new task'

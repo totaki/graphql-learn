@@ -14,7 +14,6 @@ class Task(graphene.ObjectType):
     title = graphene.String()
     description = graphene.String()
     status = Status()
-    # board = graphene.Int()
 
     class Meta:
         interfaces = (graphene.relay.Node,)
@@ -50,38 +49,9 @@ class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 
 
-class Board(graphene.ObjectType):
-
-    class Meta:
-        interfaces = (graphene.relay.Node,)
-
-    title = graphene.String(description='Board view name')
-    tasks = graphene.relay.ConnectionField(Task, description='All tasks for this board')
-
-    @classmethod
-    def get_node(cls, id, context, info):
-        data = context['store'].board.create(id)
-        tasks = filter(lambda t: t['board'] == id, context['store'].task.all())
-        return Board(id=id, tasks=[t['id'] for t in tasks], **data)
-
-    def resolve_tasks(self, args, context, info):
-        tasks = [context['store'].task.get(t) for t in self.tasks]
-        return [Task(**data) for data in tasks]
-
-
 class Query(graphene.ObjectType):
 
-    test = graphene.Boolean()
-    # board = graphene.Field(Board, id=graphene.Int())
     node = graphene.relay.Node.Field()
-
-    def resolve_test(self, args, context, info) -> bool:
-        return True
-
-    # def resolve_board(self, args, context, info) -> Task:
-    #     id = args['id']
-    #     data = context['store'].board.get(id)
-    #     return Board(**data)
 
 
 class Schema:
