@@ -20,7 +20,7 @@ class Task(graphene.ObjectType):
 
     @classmethod
     def get_node(cls, id, context, info):
-        data = context['store'].task.get(id)
+        data = context['store'].get(id)
         return Task(**data)
 
 
@@ -35,11 +35,11 @@ class CreateTask(graphene.relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, args, context, info):
-        index = context['store'].task.create({
+        index = context['store'].create({
             'title': args.get('title'),
             'description': args.get('description')}
         )
-        data = context['store'].task.get(index)
+        data = context['store'].get(index)
         task = Task(status=Status.TODO, **data)
         ok = True
         return CreateTask(task=task, ok=ok)

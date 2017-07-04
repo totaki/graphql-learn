@@ -14,7 +14,7 @@ DEFAULT_CONFIG_FILENAME = 'config_default.yml'
 def make_app(config_filename):
     with open(config_filename) as cf:
         config = yaml.load(cf)
-    store = JSONStore(['task', 'board'], file_name=config['store'])
+    store = JSONStore(file_name=config['store'])
     schema = Schema(store=store)
     return tornado.web.Application([
         (r"/graphql", GraphQLHandler),

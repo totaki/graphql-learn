@@ -7,9 +7,9 @@ from main import make_app
 
 
 @pytest.fixture
-def store_test():
+def store():
     store_name = 'test_store.json'
-    store = JSONStore(['test'], store_name)
+    store = JSONStore(store_name)
     store.load()
     yield store
     if os.path.isfile(store_name):
@@ -17,18 +17,8 @@ def store_test():
 
 
 @pytest.fixture
-def store_app():
-    store_name = 'test_store.json'
-    store = JSONStore(['task', 'board'], store_name)
-    store.load()
-    yield store
-    if os.path.isfile(store_name):
-        os.remove(store_name)
-
-
-@pytest.fixture
-def schema(store_app):
-    return Schema(store_app)
+def schema(store):
+    return Schema(store)
 
 
 @pytest.fixture
