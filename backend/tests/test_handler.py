@@ -1,16 +1,38 @@
 import pytest
 
 
+def mutation(name, input_query, select_query):
+    return f'mutation {{ {name} {input_query} {{ {select_query} }} }}'
+
+
+def input_mutation(**kwargs):
+    inputs = ','.join([
+        f'{k}: "{v}"' if isinstance(v, str) else f'{k}: {v}'
+        for k, v in kwargs.items()
+    ])
+    return f'(input: {{ {inputs} , clientMutationId: "test" }}) '
+
+
+def select(*args, **kwargs):
+    args_join = ' '.join(args)
+    kwargs_join = ' '.join([f'{k} {{ {v} }}' for k,v in kwargs.items()])
+    return f'{args_join} {kwargs_join}'
+
+"""
+mutation(
+    'createTask'
+    input_mutation(title='Title', description='Description')
+    select('ok', task=select('id')
+)
+"""
+
 CREATE_TASK_TITLE = 'Title test'
 CREATE_TASK_DESCRIPTION = 'Create new task'
-CREATE_TASK_QUERY = f'''mutation TaskMutation {{
-        createTask (input: {{ title: "{CREATE_TASK_TITLE}", description: "{CREATE_TASK_DESCRIPTION}", clientMutationId:"abc" }}) {{
-            ok,
-            task {{
-                id
-            }}
-        }} 
-    }}'''
+CREATE_TASK_QUERY = mutation(
+    'createTask',
+    input_mutation(title=CREATE_TASK_TITLE, description=CREATE_TASK_DESCRIPTION),
+    select('ok', task=select('id'))
+)
 
 
 @pytest.mark.gen_test
