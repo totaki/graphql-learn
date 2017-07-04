@@ -18,13 +18,6 @@ def select(*args, **kwargs):
     kwargs_join = ' '.join([f'{k} {{ {v} }}' for k,v in kwargs.items()])
     return f'{args_join} {kwargs_join}'
 
-"""
-mutation(
-    'createTask'
-    input_mutation(title='Title', description='Description')
-    select('ok', task=select('id')
-)
-"""
 
 CREATE_TASK_TITLE = 'Title test'
 CREATE_TASK_DESCRIPTION = 'Create new task'
