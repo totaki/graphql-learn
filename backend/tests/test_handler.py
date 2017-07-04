@@ -1,22 +1,28 @@
 import pytest
 
 
-@pytest.mark.gen_test
-def test_create_and_get_task(http_client, base_url, get_response_field):
-    title = 'Title test'
-    description = 'Create new task'
-    create_body = f'''mutation TaskMutation {{
-        createTask (input: {{ title: "{title}", description: "{description}", clientMutationId:"abc" }}) {{
+CREATE_TASK_TITLE = 'Title test'
+CREATE_TASK_DESCRIPTION = 'Create new task'
+CREATE_TASK_QUERY = f'''mutation TaskMutation {{
+        createTask (input: {{ title: "{CREATE_TASK_TITLE}", description: "{CREATE_TASK_DESCRIPTION}", clientMutationId:"abc" }}) {{
             ok,
             task {{
                 id
             }}
         }} 
     }}'''
-    response = yield http_client.fetch(base_url + '/graphql', method='POST', body=create_body)
-    id = get_response_field(response, 'createTask', 'task', 'id')
+
+
+@pytest.mark.gen_test
+def test_create_and_get_tasks(http_client, base_url, get_response_field):
+    ids = []
+    for i in range(10):
+        response = yield http_client.fetch(
+            base_url + '/graphql', method='POST', body=CREATE_TASK_QUERY)
+        id = get_response_field(response, 'createTask', 'task', 'id')
+        ids.append(id)
     get_body = f'''query {{
-        node (id : "{id}") {{
+        node (id : "{ids[0]}") {{
             id
             ... on Task {{
                 title, description, status
@@ -25,5 +31,25 @@ def test_create_and_get_task(http_client, base_url, get_response_field):
     }}'''
     response = yield http_client.fetch(base_url + '/graphql', method='POST', body=get_body)
     task = get_response_field(response, 'node')
-    assert task['description'] == description
+    assert task['description'] == CREATE_TASK_DESCRIPTION
+
+    get_all_paginated_query = f'''query {{
+        tasks (first : 5) {{
+            pageInfo {{
+                startCursor
+                endCursor
+                hasNextPage
+                hasPreviousPage
+            }}
+            edges {{
+                cursor
+                node {{
+                    title
+                }}
+            }}
+        }}
+    }}'''
+    response = yield http_client.fetch(base_url + '/graphql', method='POST', body=get_all_paginated_query)
+    assert get_response_field(response, 'tasks', 'pageInfo', 'hasNextPage')
+    assert not get_response_field(response, 'tasks', 'pageInfo', 'hasPreviousPage')
 

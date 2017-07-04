@@ -51,7 +51,11 @@ class Mutations(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
 
+    tasks = graphene.relay.ConnectionField(Task)
     node = graphene.relay.Node.Field()
+
+    def resolve_tasks(self, args, context, info):
+        return sorted([int(k) for k in context['store'].all().keys()])
 
 
 class Schema:
