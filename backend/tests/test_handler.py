@@ -53,3 +53,26 @@ def test_create_and_get_tasks(http_client, base_url, get_response_field):
     assert get_response_field(response, 'tasks', 'pageInfo', 'hasNextPage')
     assert not get_response_field(response, 'tasks', 'pageInfo', 'hasPreviousPage')
 
+    cursor = get_response_field(response, 'tasks', 'edges')[2]['cursor']
+    last_cursor = get_response_field(response, 'tasks', 'edges')[4]['cursor']
+    get_all_paginated_query = f'''query {{
+        tasks (first : 2, after: "{cursor}") {{
+            pageInfo {{
+                startCursor
+                endCursor
+                hasNextPage
+                hasPreviousPage
+            }}
+            edges {{
+                cursor
+                node {{
+                    title
+                }}
+            }}
+        }}
+    }}'''
+    response = yield http_client.fetch(base_url + '/graphql', method='POST', body=get_all_paginated_query)
+    cursor_last = get_response_field(response, 'tasks', 'edges')[1]['cursor']
+    assert cursor_last == last_cursor
+
+
