@@ -55,7 +55,10 @@ class Query(graphene.ObjectType):
     node = graphene.relay.Node.Field()
 
     def resolve_tasks(self, args, context, info):
-        return sorted([int(k) for k in context['store'].all().keys()])
+        result = [
+             Task(**context['store'].get(k))
+             for k in sorted(context['store'].all().keys())]
+        return result
 
 
 class Schema:

@@ -13,6 +13,7 @@ class GraphQLHandler(tornado.web.RequestHandler):
 
     def post(self):
         result = self.schema.execute(self.query)
+        self.set_header('Access-Control-Allow-Origin', '*')
         if result.errors:
             self.write({'errors': [e.args for e in result.errors]})
         else:

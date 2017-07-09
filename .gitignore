@@ -7,3 +7,4 @@ __pycache__
 *.xlog
 *.snap
 graphql-ide
+data.json

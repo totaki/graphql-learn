@@ -88,6 +88,8 @@ def test_create_and_get_tasks(http_client, base_url, get_response_field):
     }}'''
     response = yield http_client.fetch(base_url + '/graphql', method='POST', body=get_all_paginated_query)
     cursor_last = get_response_field(response, 'tasks', 'edges')[1]['cursor']
+    title = get_response_field(response, 'tasks', 'edges')[1]['node']['title']
     assert cursor_last == last_cursor
+    assert title == CREATE_TASK_TITLE
 
 

@@ -15,6 +15,7 @@ def make_app(config_filename):
     with open(config_filename) as cf:
         config = yaml.load(cf)
     store = JSONStore(file_name=config['store'])
+    store.load()
     schema = Schema(store=store)
     return tornado.web.Application([
         (r"/graphql", GraphQLHandler),
@@ -36,6 +37,7 @@ if __name__ == "__main__":
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         print(f'Shutdown server')
+        app.settings['schema'].store.dump()
     except Exception as e:
         print(e)
 
