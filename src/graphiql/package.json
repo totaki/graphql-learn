@@ -1,6 +1,0 @@
-{
-  "description": "An example using GraphiQL",
-  "scripts": {
-    "start": "node server.js"
-  }
-}
