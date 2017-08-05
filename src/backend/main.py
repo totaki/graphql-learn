@@ -37,10 +37,10 @@ class GraphQLHandler(tornado.web.RequestHandler):
     def get_response(self):
         query, variables = self.query_data
         result = self.schema.execute(query, variable_values=variables)
-        if result.errors:
-            self.write({'errors': [e.args for e in result.errors]})
-        else:
-            self.write(result.data)
+        self.finish({
+            'errors': result.errors,
+            'data': result.data
+        })
 
     def get(self):
         self.get_response()
