@@ -1,3 +1,4 @@
+![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/main.png)
 # GraphQL и Python
 
 Тут надо какой-то заголовок
