@@ -5,7 +5,7 @@ import tornado.web
 from tornado.options import define, options
 
 define("debug", default=True)
-define("port", default=10080)
+define("port", default=8888)
 
 
 class Query(graphene.ObjectType):

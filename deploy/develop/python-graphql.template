@@ -4,11 +4,11 @@ server {
     server_name  localhost;
 
     location / {
-        proxy_pass http://localhost:${GRAPHIQL_PORT};
+        root /srv/www/graphiql;
     }
 
     location /graphql {
-        proxy_pass http://localhost:${BACKEND_PORT};
+        proxy_pass http://backend:${BACKEND_PORT};
     }
 
     error_page   500 502 503 504  /50x.html;

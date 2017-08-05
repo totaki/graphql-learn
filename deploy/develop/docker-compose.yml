@@ -4,20 +4,21 @@ services:
 
   nginx:
     image: nginx:1.11
-    network_mode: "host"
+    ports:
+      - "8080:${NGINX_PORT}"
     environment:
      - NGINX_PORT=${NGINX_PORT}
      - BACKEND_PORT=${BACKEND_PORT}
-     - GRAPHIQL_PORT=${GRAPHIQL_PORT}
     volumes:
      - ./python-graphql.template:/etc/nginx/conf.d/python-graphql.template
+     - ../../src/graphiql:/srv/www/graphiql
     command: /bin/bash -c "envsubst < /etc/nginx/conf.d/python-graphql.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
-  graphiql:
-    image: graphiql:0.1
+  backend:
+    image: graphql-learn:0.1
     build:
-      context: ../../src/graphiql
-    environment:
-     - GRAPHIQL_PORT=${GRAPHIQL_PORT}
-    network_mode: "host"
-    command: bash -c "yarn start"
+      context: ../../src/backend
+      args:
+        server_port: ${BACKEND_PORT}
+    volumes:
+     - ../../src/backend:/srv/app
