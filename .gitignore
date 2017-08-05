@@ -1,5 +1,10 @@
+.idea
 data
 secrets.py
 .cache
 .vscode
 __pycache__
+*.xlog
+*.snap
+graphql-ide
+data.json
