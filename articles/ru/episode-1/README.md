@@ -135,6 +135,6 @@ query {
 * [shopify](https://shopify.com/)
 
 
-С вводной часть мы закончили в [следующем эпизоде](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2) мы приступим к написаю кода, а также посмотрим какие инструменты помогают
+С вводной часть мы закончили в [следующем эпизоде](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/README.md) мы приступим к написаю кода, а также посмотрим какие инструменты помогают
 в разработке.
 

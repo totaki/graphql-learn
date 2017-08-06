@@ -43,10 +43,13 @@
 
 
 ## Ну вот мы и добравлись до кода
-1. Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
+#### Создаем хранилище
+Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
 получать по ```id int```. Приложу [ссылку](https://raw.githubusercontent.com/totaki/graphql-learn/develop/src/backend/store.py),
 если кому интересно, к статье это не относится.
-2. Следующим делом мы создадим наши абстаркные классы, унаследованные от 
+
+#### Создаем абстрактные классы
+Следующим делом мы создадим наши абстаркные классы, унаследованные от 
 [graphene.AbstractType](http://docs.graphene-python.org/en/latest/types/abstracttypes/). Они нужны нам для того
 чтобы мы могли одни и теже поля получать и передавать как в [graphene.ObjectType](http://docs.graphene-python.org/en/latest/types/objecttypes/)
 так и в [graphene.InputObjectType](http://docs.graphene-python.org/en/latest/types/mutations/)
@@ -86,7 +89,8 @@ class IterationFields(graphene.AbstractType):
     end_date = DateTime()
     task_ids = graphene.List(graphene.Int)
 ```
-3. Теперь создадим наш первый ```ObjectType``` ```TaskObject```, для него создадим ```mutation``` для создания, а также запрос
+#### Создаем задачи
+Теперь создадим наш первый ```ObjectType``` ```TaskObject```, для него создадим ```mutation``` для создания, а также запрос
 на получение списка задач.
 
 [develop/src/backend/object_types.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/object_types.py)
