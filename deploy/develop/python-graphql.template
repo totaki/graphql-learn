@@ -3,7 +3,7 @@ server {
     listen       ${NGINX_PORT};
     server_name  localhost;
 
-    location / {
+    location /ide {
         proxy_pass http://localhost:${GRAPHIQL_PORT};
     }
 
