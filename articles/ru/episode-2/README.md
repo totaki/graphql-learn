@@ -134,4 +134,4 @@ class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 ```
 Запросы к IDE. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
-![Create tasks](https://github.com/totaki/graphql-learn/blob/develop/articles/gif/create_tasks.py)
+![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/gif/create_tasks.gif)
