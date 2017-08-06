@@ -33,7 +33,7 @@
 
 Сама схема работы у нас будет незамысловатой.
 
-![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/deploy.png)
+![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/deploy_full_width.png)
 
 
 Схема работы окружения для разработки будет следущая у нас поднимается nginx который проксирует
