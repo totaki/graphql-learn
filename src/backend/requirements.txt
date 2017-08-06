@@ -1,6 +1,7 @@
 graphene==1.4.1
 graphql-core==1.1
 graphql-relay==0.4.5
+iso8601==0.1.12
 promise==2.0.2
 six==1.10.0
 tornado==4.5.1

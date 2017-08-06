@@ -3,16 +3,13 @@ import graphene
 import tornado.ioloop
 import tornado.web
 from tornado.options import define, options
+from mutations import Mutations
+from store import Store
+from query import Query
+
 
 define("debug", default=True)
 define("port", default=10080)
-
-
-class Query(graphene.ObjectType):
-    hello = graphene.String(description='some')
-
-    def resolve_hello(self, args, context, info):
-        return 'World'
 
 
 class GraphQLHandler(tornado.web.RequestHandler):
@@ -20,6 +17,10 @@ class GraphQLHandler(tornado.web.RequestHandler):
     @property
     def schema(self):
         return self.application.settings['schema']
+
+    @property
+    def store(self):
+        return self.application.settings['store']
 
     @property
     def query_data(self):
@@ -36,7 +37,7 @@ class GraphQLHandler(tornado.web.RequestHandler):
 
     def get_response(self):
         query, variables = self.query_data
-        result = self.schema.execute(query, variable_values=variables)
+        result = self.schema.execute(query, variable_values=variables, context_value={'store': self.store})
         self.finish({
             'errors': [e.args for e in result.errors] if result.errors else None,
             'data': result.data
@@ -50,10 +51,10 @@ class GraphQLHandler(tornado.web.RequestHandler):
 
 
 def make_app():
-    schema = graphene.Schema(query=Query)
+    schema = graphene.Schema(query=Query, mutation=Mutations)
     return tornado.web.Application([
         (r'/graphql', GraphQLHandler),
-    ], debug=options.debug, schema=schema)
+    ], debug=options.debug, schema=schema, store=Store())
 
 
 if __name__ == "__main__":
