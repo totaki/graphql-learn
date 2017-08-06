@@ -1,7 +1,7 @@
 ![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/main.png)
 
 Список эпизодов:
-* [Эпизод 1](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-1)
+* [Эпизод 1](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-1/README.md)
 * Эпизод 2
 
 # GraphQL и Python. Эпизод 2

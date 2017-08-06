@@ -2,7 +2,7 @@
 
 Список эпизодов:
 * Эпизод 1
-* [Эпизод 2](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2)
+* [Эпизод 2](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/README.md)
 
 # GraphQL и Python. Эпизод 1
 
