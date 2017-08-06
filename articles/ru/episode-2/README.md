@@ -134,7 +134,7 @@ class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 ```
 Запросы для IDE
-```json
+```javascript
 mutation createTask($title: String, $description: String){
  	createTask(data: {title: $title, description: $description}) {
    	task {
