@@ -31,6 +31,9 @@
 5. [GraphiQL](https://github.com/graphql/graphiql)
 6. [Nginx](https://nginx.ru/ru/)
 
+Сама схема работы у нас будет незамысловатой.
+![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/deploy.png)
+
 
 Схема работы окружения для разработки будет следущая у нас поднимается nginx который проксирует
 все на ноду, кроме запросов на /graphql который проксирует в наш бэкенд 
