@@ -1,5 +1,3 @@
-![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/main.png)
-
 [<<Назад](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/README.md#%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%B5%D0%BC-%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B8)
 
 [develop/src/backend/object_types.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/object_types.py)
