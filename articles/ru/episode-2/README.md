@@ -50,6 +50,7 @@
 [graphene.AbstractType](http://docs.graphene-python.org/en/latest/types/abstracttypes/). Они нужны нам для того
 чтобы мы могли одни и теже поля получать и передавать как в [graphene.ObjectType](http://docs.graphene-python.org/en/latest/types/objecttypes/)
 так и в [graphene.InputObjectType](http://docs.graphene-python.org/en/latest/types/mutations/)
+
 [develop/src/backend/abstracts.py](https://raw.githubusercontent.com/totaki/graphql-learn/develop/src/backend/abstracts.py)
 ```python
 import graphene
