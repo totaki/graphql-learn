@@ -46,124 +46,49 @@
 1. Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
 получать по ```id int```. Приложу [ссылку](https://raw.githubusercontent.com/totaki/graphql-learn/develop/src/backend/store.py),
 если кому интересно, к статье это не относится.
+2. Следующим делом мы создадим наши абстаркные классы, унаследованные от 
+[graphene.AbstractType](http://docs.graphene-python.org/en/latest/types/abstracttypes/). Они нужны нам для того
+чтобы мы могли одни и теже поля получать и передавать как в [graphene.ObjectType](http://docs.graphene-python.org/en/latest/types/objecttypes/)
+так и в [graphene.InputObjectType](http://docs.graphene-python.org/en/latest/types/mutations/)
 
-
-
-
+[develop/src/backend/abstracts.py](https://raw.githubusercontent.com/totaki/graphql-learn/develop/src/backend/abstracts.py)
 ```python
+import graphene
+from graphene.types.datetime import DateTime
 
-class Record:
-    
-    def __init__(self, id_, type, data):
-        pass
 
-class Store:
+class TaskStatus(graphene.Enum):
+    TODO = 1
+    IN_PROGRESS = 2
+    REVIEW = 3
+    FINISH = 4
 
-    def __init__(self, *args, **kwargs):
-        pass
-       
-    def get(self, id):
-        pass
-    
-    def create(self, *args, **kwargs):
-        pass
-    
-    def update(self, id, *args, **kwargs):
-        pass
-    
-    def delete(self, id):
-        pass
+
+class UserFields(graphene.AbstractType):
+    id = graphene.Int()
+    name = graphene.String()
+    tasks_id = graphene.List(graphene.Int)
+
+
+class TaskFields(graphene.AbstractType):
+    id = graphene.Int()
+    title = graphene.String()
+    description = graphene.String()
+    user_id = graphene.Int()
+    iteration_id = graphene.Int()
+    parent_id = graphene.Int()
+    status = TaskStatus()
+
+
+class IterationFields(graphene.AbstractType):
+    id = graphene.Int()
+    start_date = DateTime()
+    end_date = DateTime()
+    task_ids = graphene.List(graphene.Int)
 ```
 
-Теперь сделаем базовы классы:
+3. Теперь создадим наш первый ```ObjectType``` ```TaskObject```, для него создадим ```mutation``` для создания, а также запрос
+на получение списка задач
 
-```python
-class User:
-    
-    """
-    id: int
-    name: str
-    tasks: []
-    """
-    
-    def get_tasks(self):
-        pass
-```
-
-```python
-class Iteration:
-
-    """
-    id: int
-    start_date: datetime.date
-    days: int
-    tasks: []
-    """
-    def get_tasks(self):
-        pass
-    
-    def get_stop_date(self):
-        pass
-```
-
-```python
-class Task:
-
-    """
-    id: int
-    title: str
-    description: str
-    iteration: Iteration or None
-    user: User or None
-    parent: Task or None
-    status: enum ['todo', 'inprogress', 'review', 'finish']
-    """
-```
-
-Начнем с того что сделаем базу для нашей схемы
-```python
-class ScrumBoard:
-
-    """
-    backlog: [Task]
-    dashboard: [Task]
-    finish: [Task]
-    """
-    
-    def get_backlog(self):
-        pass
-    
-    def get_bashboard(self):
-        pass
-    
-    def get_finish(self):
-        pass
-```
-
-Будет у нас также 3 вида скопа, это бэклог (задачи без итерации), дашбоард (тут мы берем итерацию на текущий дату),
-и финиш итерации которые на текущую дату завершенны
-
-
-#  Попытка номер 2
-
-В общем я попробовал пойти по обычному для себя пути, стал писать сначала пустые классы, что бы понять какие данные у меня
-будут, потом стал писать для них атрибуты graphql и потом писать резолверы. Можно было бы отобразить это примерной схемой
-## TODO: нарисовать схему
-Но оказалось, что так у меня не получится, даже используя фабрики не получилось связать классы друг с другом, был вариант
-переопределить базовые классы или сделать другие хаки, но по опыту могу сказать если возникает такое желание значит вы 
-что-то делаете иначе. Потом я попробовал отобразить это в другой схемы, не классической, написал код который работал и делал
-свою функцию, но опять же у меня осталось ощущение что это не совсем то как надо работать с graphql. И тут я решил пойти
-3-им путем. Смоделить сначала юзерстори и отображение чтобы понять какие данные, в какой момент времени мне нужны.
-И полчились следующие истори:
-
-1. Первая страница, пользователь заходит и видит бэклог (список задач) и дашбоард (текущая итерация). В бэклог соотвественно мы должны видеть название задачи, её айди
-и кому она назначена. В дашбоард у нас разбит на 4 статуса в каждом у нас список задач. Мы сможем с этой страницы добавлять 
-задачи, открывать задачи и двигать задачи. Двигать задачи вперед мы можем как угодно, двигать назад со всем крофе финиш.
-Притом с ревью двигается сразу на туду.
- 
-## Описание приложения, отличия от примера
-## Написание схемы, тесты
-## Написание endpoint, тесты
-## IDE пример использованя
 
 
