@@ -133,41 +133,5 @@ class CreateTask(graphene.Mutation):
 class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 ```
-Запросы для IDE. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
-```javascript
-mutation createTask($title: String, $description: String){
-  createTask(data: {title: $title, description: $description}) {
-    task {
-      ...taskFields
-    }
-  }
-}
-
-fragment taskFields on TaskObject {
-  id,
-  title,
-  iterationId
-}
-```
-Переменные запроса
-```json
-{
-  "title": "Task title",
-  "description": "Task description"
-}
-```
-Результат запроса
-```json
-{
-  "errors": null,
-  "data": {
-    "createTask": {
-      "task": {
-        "id": 2,
-        "title": "Task title",
-        "iterationId": null
-      }
-    }
-  }
-}
-```
+Запросы к IDE. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
+![Create tasks](https://github.com/totaki/graphql-learn/blob/develop/articles/gif/create_tasks.py)
