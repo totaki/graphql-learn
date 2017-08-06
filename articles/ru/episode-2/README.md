@@ -133,19 +133,18 @@ class CreateTask(graphene.Mutation):
 class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 ```
-Запросы для IDE
+Запросы для IDE. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
 ```javascript
 mutation createTask($title: String, $description: String){
- 	createTask(data: {title: $title, description: $description}) {
-   	task {
+  createTask(data: {title: $title, description: $description}) {
+    task {
       ...taskFields
     }
- 	}
+  }
 }
 
-# Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
 fragment taskFields on TaskObject {
-	id,
+  id,
   title,
   iterationId
 }
