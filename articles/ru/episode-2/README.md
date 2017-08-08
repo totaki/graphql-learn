@@ -45,8 +45,23 @@
 ## Ну вот мы и добравлись до кода
 #### Создаем хранилище
 Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
-получать по ```id int```. Приложу [ссылку](https://raw.githubusercontent.com/totaki/graphql-learn/develop/src/backend/store.py),
+получать по ```id int```. Приложу [ссылку](https://github.com/totaki/graphql-learn/blob/develop/src/backend/store.py),
 если кому интересно, к статье это не относится.
+
+#### Создаем наше web-приложение
+Мы возьмем tornado с одним единственным обработчиком ([приложение](https://github.com/totaki/graphql-learn/blob/develop/src/backend/main.py)), в само приложение мы передадим ```schema```, пока возьмем
+с сайта пример, чтобы проверить просто работоспособность. 
+```python
+import graphene
+
+class Query(graphene.ObjectType):
+    hello = graphene.String()
+
+    def resolve_hello(self, args, context, info):
+        return 'World'
+
+schema = graphene.Schema(query=Query)
+```
 
 #### Создаем абстрактные классы
 Следующим делом мы создадим наши абстаркные классы, унаследованные от 
