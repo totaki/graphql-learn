@@ -4,8 +4,8 @@ class Record(object):
         self.kind = kind
         self._data = data if data else {}
 
-    def update(self, data):
-        self._data.update(data)
+    def update(self, **kwargs):
+        self._data.update(**kwargs)
 
     @property
     def as_dict(self):
