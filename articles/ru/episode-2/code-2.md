@@ -44,7 +44,42 @@ class CreateTask(graphene.Mutation):
 class Mutations(graphene.ObjectType):
     create_task = CreateTask.Field()
 ```
-Запросы к IDE. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
-![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/gif/create_tasks.gif)
+
+Теперь мы можем добавить mutations в нашу схему
+
+[develop/src/backend/main.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/main.py)
+
+```python
+schema = graphene.Schema(query=Query, mutation=Mutations)
+```
+
+Теперь в контекст выполнения запроса добавим наш ```store``` и переменные которые к нам приезжают вместе с запросом
+
+[develop/src/backend/main.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/main.py)
+
+```python
+result = self.schema.execute(query, variable_values=variables, context_value={'store': self.store})
+```
+
+
+Теперь попробуем создать наши задачи. Тут я поясню, фрагменты позволяют нам не писать каждый, что мы хотим запросить, а сделать это один раз
+![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/gif/create_tasks_code_2.gif)
+
+
+Теперь мы добавим в наш Query поле backlog, которое просто получает таски у которых ```iteration_id == None```
+
+[develop/src/backend/query.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/query.py)
+
+```python
+class Query(graphene.ObjectType):
+    backlog = graphene.List(object_types.TaskObject, description=backlog_description)
+
+    def resolve_backlog(self, args, context, info):
+        store = context.get('store')
+        records = store.all_by_kind('task')
+        tasks = [object_types.TaskObject(**r.as_dict) for r in records]
+        return tasks
+```
+![Get tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/gif/get_tasks_code_2.gif)
 
 [<<Назад](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/README.md#%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%B5%D0%BC-%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%D0%B8)
