@@ -1,3 +1,6 @@
+# TODO: create get data fields as object attr
+
+
 class Record(object):
     def __init__(self, index, kind, data=None):
         self.id = index
