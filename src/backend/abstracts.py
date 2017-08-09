@@ -29,5 +29,4 @@ class TaskFields(graphene.AbstractType):
 class IterationFields(graphene.AbstractType):
     id = graphene.Int()
     start_date = DateTime()
-    end_date = DateTime()
     task_ids = graphene.List(graphene.Int)
