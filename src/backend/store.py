@@ -1,13 +1,36 @@
-# TODO: create get data fields as object attr
+class RecordAttributeError(Exception):
+
+    def __init__(self, key, *args):
+        message = (
+            'Dictionary key must be not exist in object attributes: %s'
+            % key
+        )
+        super().__init__(message, *args)
 
 
 class Record(object):
+
     def __init__(self, index, kind, data=None):
         self.id = index
         self.kind = kind
-        self._data = data if data else {}
+        self._data = {}
+        if data:
+            self._check_data_attributes(data)
+            self._data = data
+
+    def _check_data_attributes(self, data):
+        keys = set(data.keys()).intersection(dir(self))
+        if len(keys):
+            raise RecordAttributeError(keys)
+
+    def __getattr__(self, name):
+        if name in self._data:
+            return self._data[name]
+        else:
+            return super().__getattribute__(name)
 
     def update(self, **kwargs):
+        self._check_data_attributes(kwargs)
         self._data.update(**kwargs)
 
     @property
@@ -21,6 +44,7 @@ class Store(object):
     def __init__(self):
         self._store = {}
 
+    # TODO: maybe move data to **kwargs
     def create(self, kind, data):
         index = len(self._store.keys()) + 1
         record = Record(index, kind, data)
