@@ -30,14 +30,21 @@ class GraphQLHandler(tornado.web.RequestHandler):
             data = json.loads(body)
             query = data['query']
             variables = data.get('variables', None)
+            operation_name = data.get('operationName', None)
         else:
             query = body
             variables = None
-        return query, variables
+            operation_name = None
+        return query, variables, operation_name
 
     def get_response(self):
-        query, variables = self.query_data
-        result = self.schema.execute(query, variable_values=variables, context_value={'store': self.store})
+        query, variables, operation_name = self.query_data
+        result = self.schema.execute(
+            query,
+            variable_values=variables,
+            context_value={'store': self.store},
+            operation_name=operation_name
+        )
         self.finish({
             'errors': [e.args for e in result.errors] if result.errors else None,
             'data': result.data
