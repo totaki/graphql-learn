@@ -11,8 +11,8 @@ This field include all tasks without iterationId
 
 
 def get_first_iteration_day(datetime, offset):
-     delta = calendar.weekday(datetime.year, datetime.month, datetime.day) + offset * 7
-     _ = datetime - dt.timedelta(days=delta)
+     delta = calendar.weekday(datetime.year, datetime.month, datetime.day)
+     _ = datetime - dt.timedelta(days=delta) + dt.timedelta(days=offset * 7)
 
      return dt.datetime(_.year, _.month, _.day)
 
