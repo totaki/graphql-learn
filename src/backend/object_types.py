@@ -19,7 +19,7 @@ class IterationObject(graphene.ObjectType, abstracts.IterationFields):
             result.extend([
                 TaskObject(**task.as_dict)
                 for task
-                in filter(lambda t: t.as_dict['iteration_id'] == self.id, tasks)
+                in filter(lambda t: t.as_dict.get('iteration_id', None) == self.id, tasks)
             ])
         return result
 

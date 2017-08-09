@@ -1,6 +1,6 @@
 class Record(object):
     def __init__(self, index, kind, data=None):
-        self._id = index
+        self.id = index
         self.kind = kind
         self._data = data if data else {}
 
@@ -9,7 +9,7 @@ class Record(object):
 
     @property
     def as_dict(self):
-        dct = {'id': self._id}
+        dct = {'id': self.id}
         dct.update(self._data)
         return dct
 
