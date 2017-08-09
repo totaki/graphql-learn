@@ -1,11 +1,11 @@
 class RecordAttributeError(Exception):
 
-    def __init__(self, key, *args):
+    def __init__(self, keys):
         message = (
             'Dictionary key must be not exist in object attributes: %s'
-            % key
+            % keys
         )
-        super().__init__(message, *args)
+        super().__init__(message)
 
 
 class Record(object):
