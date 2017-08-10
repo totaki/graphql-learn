@@ -19,14 +19,14 @@ class Query(graphene.ObjectType):
             object_types.TaskObject(**record.as_dict)
             for record
             in filter(
-                lambda r: not r.as_dict.get('iteration_id', None), records)
+                lambda r: not r.iteration_id, records)
         ]
         return tasks
 
     def resolve_dashboard(self, args, context, info):
         iteration_dt = get_iteration_datetime(args)
         iterations = context['store'].all_by_kind('iteration')
-        filtered_iterations = list(filter(lambda i: i.as_dict['start_date'] == iteration_dt, iterations))
+        filtered_iterations = list(filter(lambda i: i.start_date == iteration_dt, iterations))
         if filtered_iterations:
             return object_types.IterationObject(**filtered_iterations[0].as_dict)
         else:

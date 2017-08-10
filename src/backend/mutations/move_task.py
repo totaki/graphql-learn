@@ -34,7 +34,7 @@ class MoveTask(Mutation):
                 record.update(iteration_id=iteration_id)
             else:
                 date = get_datetime(args.get('iteration_date'))
-                iteration = store.create('iteration', {'start_date': date})
+                iteration = store.create('iteration', start_date=date)
         record.update(iteration_id=iteration.id)
         task = TaskObject(**record.as_dict)
         return MoveTask(task=task)

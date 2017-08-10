@@ -47,10 +47,12 @@ class Store(object):
     def __init__(self):
         self._store = {}
 
-    # TODO: maybe move data to **kwargs
-    def create(self, kind, data):
+    def create(self, kind, data=None, **kwargs):
         index = len(self._store.keys()) + 1
-        record = Record(index, kind, data)
+        if data:
+            record = Record(index, kind, data)
+        else:
+            record = Record(index, kind, kwargs)
         self._store[index] = record
         return record
 
