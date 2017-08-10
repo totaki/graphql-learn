@@ -27,7 +27,10 @@ class Record(object):
         if name in self._data:
             return self._data[name]
         else:
-            return super().__getattribute__(name)
+            try:
+                return super().__getattribute__(name)
+            except AttributeError:
+                return
 
     def update(self, **kwargs):
         self._check_data_attributes(kwargs)
