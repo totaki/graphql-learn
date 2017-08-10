@@ -1,6 +1,6 @@
 import datetime as dt
 import calendar
-
+from enums import TaskStatus
 
 def get_datetime(datetime=None, offset=0):
     if not datetime:
@@ -15,4 +15,15 @@ def get_iteration_datetime(args):
         datetime=args.get('date', None),
         offset=args.get('offset', None)
     )
+
+
+def get_directions(next, prev):
+    from_backlog = (next == TaskStatus.TODO and prev == TaskStatus.BACKLOG)
+    to_backlog = (next == TaskStatus.BACKLOG and prev == TaskStatus.TODO)
+    return from_backlog, to_backlog
+
+
+def get_args_by_list(args, list_keys):
+    return [args.get(key, None) for key in list_keys]
+
 

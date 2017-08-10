@@ -1,8 +1,8 @@
 from graphene import Argument, Field, Int, Mutation
 from graphene.types.datetime import DateTime
-from enums import MovePositionTask, TaskStatus
+from enums import MovePositionTask
 from object_types import TaskObject
-from utils import get_datetime
+from utils import get_datetime, get_directions, get_args_by_list
 
 
 class MoveTask(Mutation):
@@ -17,24 +17,25 @@ class MoveTask(Mutation):
 
     @staticmethod
     def mutate(root, args, context, info):
-        # TODO: create back to backlog logic
         store = context.get('store')
-        id = args.get('task_id')
-        position = args.get('position')
-        record = store.get(id)
-        previous_status = record.as_dict['status']
-        record.update(status=record.as_dict['status'] + position)
-        move_from_backlog = (
-            record.as_dict['status'] == TaskStatus.TODO
-            and previous_status == TaskStatus.BACKLOG
+        id, position, iteration, date = get_args_by_list(
+            args,
+            ['task_id', 'position', 'iteration_id', 'iteration_date']
         )
-        if move_from_backlog:
-            iteration_id = args.get('iteration_id', None)
-            if iteration_id:
-                record.update(iteration_id=iteration_id)
+        record = store.get(id)
+        previous_status = record.status
+        record.update(status=record.status + position)
+
+        from_backlog, to_backlog = get_directions(next=record.status, prev=previous_status)
+        if from_backlog:
+            if iteration:
+                record.update(iteration_id=iteration)
             else:
-                date = get_datetime(args.get('iteration_date'))
-                iteration = store.create('iteration', start_date=date)
-        record.update(iteration_id=iteration.id)
+                date = get_datetime(date)
+                iteration = store.create('iteration', start_date=date).id
+                record.update(iteration_id=iteration)
+        elif to_backlog:
+            record.update(iteration_id=None)
+
         task = TaskObject(**record.as_dict)
         return MoveTask(task=task)
