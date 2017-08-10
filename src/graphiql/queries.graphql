@@ -1,0 +1,47 @@
+query getDashboard ($offset: Int){
+  dashboard (offset: $offset){
+    id
+    startDate
+    endDate
+    tasks {
+      ... taskData
+    }
+  }
+}
+
+query getBacklog {
+  backlog {
+    ... taskData
+  }
+}
+
+
+mutation createTask($title: String, $description: String) {
+  createTask(taskData: {title: $title, description: $description}) {
+    task {
+      ... taskData
+    }
+  }
+}
+
+mutation moveTaskForward($taskId: Int) {
+  moveTask(taskId: $taskId, position: FORWARD) {
+    task {
+      ... taskData
+    }
+  }
+}
+
+mutation moveTaskBack($taskId: Int) {
+  moveTask(taskId: $taskId, position: BACK) {
+    task {
+      ... taskData
+    }
+  }
+}
+
+fragment taskData on TaskObject {
+  id
+  status
+  iterationId
+}

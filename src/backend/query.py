@@ -20,7 +20,6 @@ class Query(graphene.ObjectType):
         ]
 
     def resolve_dashboard(self, args, context, info):
-        # TODO: move get task to store method
         iteration_dt = get_iteration_datetime(args)
         iterations = context['store'].iterations
         filtered_iterations = list(filter(lambda i: i.start_date == iteration_dt, iterations))
