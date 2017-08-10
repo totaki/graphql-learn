@@ -1,13 +1,6 @@
 import graphene
 from graphene.types.datetime import DateTime
-
-
-class TaskStatus(graphene.Enum):
-    BACKLOG = 0
-    TODO = 1
-    IN_PROGRESS = 2
-    REVIEW = 3
-    FINISH = 4
+from enums import TaskStatus
 
 
 class UserFields(graphene.AbstractType):
