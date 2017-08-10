@@ -2,6 +2,7 @@ import datetime as dt
 import calendar
 from enums import TaskStatus
 
+
 def get_datetime(datetime=None, offset=0):
     if not datetime:
         datetime = dt.datetime.utcnow()
@@ -25,5 +26,3 @@ def get_directions(next, prev):
 
 def get_args_by_list(args, list_keys):
     return [args.get(key, None) for key in list_keys]
-
-

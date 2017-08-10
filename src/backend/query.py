@@ -13,19 +13,16 @@ class Query(graphene.ObjectType):
     dashboard = graphene.Field(object_types.IterationObject, iteration_id=graphene.Int(), offset=graphene.Int())
 
     def resolve_backlog(self, args, context, info):
-        store = context.get('store')
-        records = store.all_by_kind('task')
-        tasks = [
-            object_types.TaskObject(**record.as_dict)
-            for record
-            in filter(
-                lambda r: not r.iteration_id, records)
+        tasks = context['store'].tasks
+        return [
+            object_types.TaskObject(**task.as_dict)
+            for task in filter(lambda t: not t.iteration_id, tasks)
         ]
-        return tasks
 
     def resolve_dashboard(self, args, context, info):
+        # TODO: move get task to store method
         iteration_dt = get_iteration_datetime(args)
-        iterations = context['store'].all_by_kind('iteration')
+        iterations = context['store'].iterations
         filtered_iterations = list(filter(lambda i: i.start_date == iteration_dt, iterations))
         if filtered_iterations:
             return object_types.IterationObject(**filtered_iterations[0].as_dict)

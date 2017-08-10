@@ -32,7 +32,7 @@ class MoveTask(Mutation):
                 record.update(iteration_id=iteration)
             else:
                 date = get_datetime(date)
-                iteration = store.create('iteration', start_date=date).id
+                iteration = store.create_iteration(start_date=date).id
                 record.update(iteration_id=iteration)
         elif to_backlog:
             record.update(iteration_id=None)

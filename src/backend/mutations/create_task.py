@@ -16,6 +16,6 @@ class CreateTask(Mutation):
         store = context.get('store')
         task_data = args.get('task_data')
         task_data['status'] = TaskStatus.BACKLOG.value
-        record = store.create('task', data=task_data)
+        record = store.create_task(data=task_data)
         task = TaskObject(**record.as_dict)
         return CreateTask(task=task)
