@@ -26,7 +26,7 @@ class GraphQLHandler(tornado.web.RequestHandler):
     def query_data(self):
         body = self.request.body.decode('utf-8')
         content_type = self.request.headers.get_list('Content-Type')[0]
-        if content_type == 'application/json':
+        if 'application/json' in content_type:
             data = json.loads(body)
             query = data['query']
             variables = data.get('variables', None)
