@@ -1,5 +1,5 @@
 from graphene import InputObjectType
-from abstracts import TaskFields
+from object_types import TaskFields
 
 
 class TaskInput(InputObjectType, TaskFields):

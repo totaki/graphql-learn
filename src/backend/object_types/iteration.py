@@ -1,14 +1,12 @@
 import datetime as dt
 import graphene
-import abstracts
 from graphene.types.datetime import DateTime
+from . import TaskObject
 
 
-class TaskObject(graphene.ObjectType, abstracts.TaskFields):
-    pass
-
-
-class IterationObject(graphene.ObjectType, abstracts.IterationFields):
+class IterationObject(graphene.ObjectType):
+    id = graphene.Int()
+    start_date = DateTime()
     tasks = graphene.List(TaskObject)
     end_date = DateTime()
 

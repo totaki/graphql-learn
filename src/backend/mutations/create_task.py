@@ -9,7 +9,7 @@ class CreateTask(Mutation):
     class Input:
         task_data = Argument(TaskInput)
 
-    task = Field(lambda: TaskObject)
+    task = Field(TaskObject)
 
     @staticmethod
     def mutate(root, args, context, info):

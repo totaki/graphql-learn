@@ -126,4 +126,8 @@ result = self.schema.execute(
     context_value={'store': self.store},
     operation_name=operation_name
 )
-``` 
+```
+
+### Создание задач
+Попробуем создать наши первые задачи. Сначала мы создадим класс TaskFields от graphene.AbstractType. В graphene есть две дороги для 
+встаривания одного типа в другой ```#TODO: надо написать про различия и зачем нужны```
