@@ -175,7 +175,29 @@ query {
     ... on Child {
       mother_name
     }
-  }
+
 }
 ```
-TODO: это надо проверить еще точно
+
+### Получение backlog
+Тут все просто мы создаем резолвер **resolve_backlog** который возвращает из БД объекты, у которых
+нет атрибута iteration_id или он равен None. Мы также указываем, что у нас это список
+объектов.
+
+```python
+class Query(graphene.ObjectType):
+
+    backlog_description = '''
+    This field include all tasks without iteration
+    '''
+    backlog = graphene.List(
+        TaskObject, description=backlog_description
+    )
+
+    def resolve_backlog(self, args, context, info):
+        tasks = context['store'].tasks
+        return [
+            TaskObject(**task.as_dict)
+            for task in filter(lambda t: not t.iteration_id, tasks)
+        ]
+```
