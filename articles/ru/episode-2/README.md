@@ -101,7 +101,7 @@ schema = graphene.Schema(query=Query)
 
 
 ### Место жизни нашего приложения
-Для обработки входящих запросов мы будем использовать tornado, у которого будет один единственный обработчик. Тут есть пара моментов
+Для обработки входящих запросов мы будем использовать **tornado**, у которого будет один единственный обработчик. Тут есть пара моментов
 не указанных в документации. Когда я писал через тесты то передавал просто **query** в теле запроса, как строку (пример ```query { hello }```),
 в последтвии когда подключил **GraphiQL**, увидел что там прилетает ```application/json``` и он в себя уже включает несколько полей, это **query** (сам запрос),
 **variables** (опционально, переменные запроса, это объект) и **operationName** (опционально, название запроса, ```query helloQuery { hello }```). Мы получаем эти поля и передаем в наш
@@ -129,5 +129,53 @@ result = self.schema.execute(
 ```
 
 ### Создание задач
-Попробуем создать наши первые задачи. Сначала мы создадим класс TaskFields от graphene.AbstractType. В graphene есть две дороги для 
-встаривания одного типа в другой ```#TODO: надо написать про различия и зачем нужны```
+Попробуем создать наши первые задачи. Сначала мы создадим класс **TaskFields** от **graphene.AbstractType**. **AbstractType** это фишка самого graphene, 
+он нам позволяет не писать каждый одни и теже поля для классов одной сущности. Например в данном случае у нас есть **TaskFields**:
+```python
+class TaskFields(graphene.AbstractType):
+    title = graphene.String()
+    description = graphene.String()
+```
+Данные поля нам понадобятся для самого **ObjectType** (сам объект запроса)и **InputObjectType** (данный класс нужен чтобы указать какие поля мы можем получить в нашей мутации)
+
+```python
+class TaskInput(InputObjectType, TaskFields):
+    pass
+
+class TaskObject(graphene.ObjectType, TaskFields):
+    id = graphene.Int()
+    status = graphene.Field(TaskStatus)
+```
+
+В документации в **graphene** вы можете найти также тип **Interface**, это один из типов GraphQL.
+
+```graphql
+interface Human {
+  id: ID!
+  name: String!
+}
+
+type Mother implements Human {
+  id: ID!
+  name: String!
+}
+
+type Child implements Human {
+  id: ID!
+  name: String!
+  mother_name: String
+}
+```
+Например character resolver, нам возвращает тип Human и чтобы получить поля Child,
+мы можем указать тип и поле которое нам необходиммо. В итоге мы получим  
+```graphql
+query {
+  character {
+    name 
+    ... on Child {
+      mother_name
+    }
+  }
+}
+```
+TODO: это надо проверить еще точно
