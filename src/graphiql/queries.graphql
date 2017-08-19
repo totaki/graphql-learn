@@ -44,3 +44,16 @@ fragment taskData on TaskObject {
   id
   status
 }
+
+mutation setParentTask($parentId: Int, $childId: Int) {
+  setParent(parentId: $parentId, childId: $childId) {
+    task {
+      parent {
+        id
+        childs {
+          id
+        }
+      }
+    }
+  }
+}

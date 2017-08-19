@@ -40,5 +40,7 @@ class MoveTask(Mutation):
         task_data = record.as_dict
         if 'iteration_id' in task_data.keys():
             task_data.pop('iteration_id')
+        if 'parent_id' in task_data.keys():
+            task_data.pop('parent')
         task = TaskObject(**task_data)
         return MoveTask(task=task)

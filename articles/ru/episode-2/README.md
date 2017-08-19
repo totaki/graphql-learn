@@ -468,3 +468,20 @@ Variables
   }
 }
 ```
+
+### Древовидная структура тасков
+Добавим нашем задач родительскую задачу и задачи потомки. Если мы хотим указать что не которые поля являются теми же
+объектами что и сам объект мы должны просто указать ```lambda: T```
+
+**object_types.task**
+```python
+class TaskFields(graphene.AbstractType):
+    title = graphene.String()
+    description = graphene.String()
+
+class TaskObject(graphene.ObjectType, TaskFields):
+    id = graphene.Int()
+    status = graphene.Field(TaskStatus)
+    parent = graphene.Field(lambda: TaskObject)
+```
+
