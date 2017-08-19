@@ -43,5 +43,4 @@ mutation moveTaskBack($taskId: Int) {
 fragment taskData on TaskObject {
   id
   status
-  iterationId
 }
