@@ -131,51 +131,88 @@ result = self.schema.execute(
 ### Создание задач
 Попробуем создать наши первые задачи. Сначала мы создадим класс **TaskFields** от **graphene.AbstractType**. **AbstractType** это фишка самого graphene, 
 он нам позволяет не писать каждый одни и теже поля для классов одной сущности. Например в данном случае у нас есть **TaskFields**:
+
+**enums.task_status**
+```python
+class TaskStatus(Enum):
+    BACKLOG = 0
+    TODO = 1
+    IN_PROGRESS = 2
+    REVIEW = 3
+    FINISH = 4
+```
+
+**mutations.inputs.task_input**
+```python
+class TaskInput(InputObjectType, TaskFields):
+    pass
+```
+Данные поля нам понадобятся для самого **ObjectType** (сам объект запроса)и **InputObjectType** (данный класс нужен чтобы указать какие поля мы можем получить в нашей мутации)
+
+**object_types.task**
 ```python
 class TaskFields(graphene.AbstractType):
     title = graphene.String()
     description = graphene.String()
-```
-Данные поля нам понадобятся для самого **ObjectType** (сам объект запроса)и **InputObjectType** (данный класс нужен чтобы указать какие поля мы можем получить в нашей мутации)
-
-```python
-class TaskInput(InputObjectType, TaskFields):
-    pass
 
 class TaskObject(graphene.ObjectType, TaskFields):
     id = graphene.Int()
     status = graphene.Field(TaskStatus)
 ```
 
-В документации в **graphene** вы можете найти также тип **Interface**, это один из типов GraphQL.
+**mutations.create_task**
+```python
+class CreateTask(Mutation):
+
+    class Input:
+        task_data = Argument(TaskInput)
+
+    task = Field(TaskObject)
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        store = context.get('store')
+        task_data = args.get('task_data')
+        task_data['status'] = TaskStatus.BACKLOG.value
+        record = store.create_task(data=task_data)
+        task = TaskObject(**record.as_dict)
+        return CreateTask(task=task)
+```
+Теперь мы можем выполнять запросы на создание нашей задачи
 
 ```graphql
-interface Human {
-  id: ID!
-  name: String!
+mutation createTask($title: String, $description: String) {
+  createTask(taskData: {title: $title, description: $description}) {
+    task {
+      ... taskData
+    }
+  }
 }
 
-type Mother implements Human {
-  id: ID!
-  name: String!
-}
-
-type Child implements Human {
-  id: ID!
-  name: String!
-  mother_name: String
+fragment taskData on TaskObject {
+  id
+  status
 }
 ```
-Например character resolver, нам возвращает тип Human и чтобы получить поля Child,
-мы можем указать тип и поле которое нам необходиммо. В итоге мы получим  
-```graphql
-query {
-  character {
-    name 
-    ... on Child {
-      mother_name
+Variables
+```json
+{
+  "title": "Task title",
+  "description": "Task description"
+}
+```
+В ответ получим
+```json
+{
+  "errors": null,
+  "data": {
+    "createTask": {
+      "task": {
+        "id": 1,
+        "status": "BACKLOG"
+      }
     }
-
+  }
 }
 ```
 
@@ -184,6 +221,7 @@ query {
 нет атрибута iteration_id или он равен None. Мы также указываем, что у нас это список
 объектов.
 
+**query**
 ```python
 class Query(graphene.ObjectType):
 
@@ -200,4 +238,131 @@ class Query(graphene.ObjectType):
             TaskObject(**task.as_dict)
             for task in filter(lambda t: not t.iteration_id, tasks)
         ]
+```
+
+Запрос будет выглядить 
+```graphql
+query getBacklog {
+  backlog {
+    ... taskData
+  }
+}
+```
+
+В ответ мы получим 
+```json
+{
+  "errors": null,
+  "data": {
+    "backlog": [
+      {
+        "id": 1,
+        "status": "BACKLOG"
+      },
+      {
+        "id": 2,
+        "status": "BACKLOG"
+      }
+    ]
+  }
+}
+```
+
+### Работа с итерациями
+В объекте итерации мы не будем хранить дату окончания итерации, а вычислять ее на лету, если нам надо это поле.
+**object_types.iteration**
+```python
+class IterationObject(graphene.ObjectType):
+    id = graphene.Int()
+    start_date = DateTime()
+    tasks = graphene.List(TaskObject)
+    end_date = DateTime()
+
+    def resolve_tasks(self, args, context, info):
+        result = []
+        if self.id:
+            tasks = context['store'].all_by_kind('task')
+            result.extend([
+                TaskObject(**task.as_dict)
+                for task
+                in filter(lambda t: t.as_dict.get('iteration_id', None) == self.id, tasks)
+            ])
+        return result
+
+    def resolve_end_date(self, args, context, info):
+        return self.start_date + dt.timedelta(days=6)
+```
+
+**query**
+```python
+class Query(graphene.ObjectType):
+
+    ...
+
+    dashboard = graphene.Field(
+        IterationObject,
+        iteration_id=graphene.Int(),
+        offset=graphene.Int()
+    )
+
+
+    def resolve_dashboard(self, args, context, info):
+        iteration_dt = get_iteration_datetime(args)
+        iterations = context['store'].iterations
+        filtered_iterations = list(filter(lambda i: i.start_date == iteration_dt, iterations))
+        if filtered_iterations:
+            return IterationObject(**filtered_iterations[0].as_dict)
+        else:
+            return IterationObject(id=None, start_date=iteration_dt)
+```
+
+**utils**
+```python
+def get_datetime(datetime=None, offset=0):
+    if not datetime:
+        datetime = dt.datetime.utcnow()
+    delta = calendar.weekday(datetime.year, datetime.month, datetime.day)
+    _ = datetime - dt.timedelta(days=delta) + dt.timedelta(days=offset * 7)
+    return dt.datetime(_.year, _.month, _.day)
+
+
+def get_iteration_datetime(args):
+    return get_datetime(
+        datetime=args.get('date', None),
+        offset=args.get('offset', None)
+    )
+```
+
+Пример запроса
+```graphql
+query getDashboard ($offset: Int){
+  dashboard (offset: $offset){
+    id
+    startDate
+    endDate
+    tasks {
+      ... taskData
+    }
+  }
+}
+```
+Variables, переменная offset на сколько недель мы сместились от текущей даты итерации, дата итерации это первый день недели
+```json
+{
+  "offset": 0
+}
+```
+Ответ
+```json
+{
+  "errors": null,
+  "data": {
+    "dashboard": {
+      "id": null,
+      "startDate": "2017-08-14T00:00:00",
+      "endDate": "2017-08-20T00:00:00",
+      "tasks": []
+    }
+  }
+}
 ```
