@@ -178,6 +178,13 @@ class CreateTask(Mutation):
         task = TaskObject(**record.as_dict)
         return CreateTask(task=task)
 ```
+
+**mutations.__init__**
+```python
+class Mutations(ObjectType):
+    create_task = CreateTask.Field()
+```
+
 Теперь мы можем выполнять запросы на создание нашей задачи
 
 ```graphql
@@ -269,7 +276,9 @@ query getBacklog {
 ```
 
 ### Работа с итерациями
-В объекте итерации мы не будем хранить дату окончания итерации, а вычислять ее на лету, если нам надо это поле.
+В объекте итерации мы не будем хранить дату окончания итерации, а вычислять ее на лету, если нам надо это поле. Также мы не храним
+наш объект пока в нем нет ни одной итерции.
+
 **object_types.iteration**
 ```python
 class IterationObject(graphene.ObjectType):
@@ -362,6 +371,99 @@ Variables, переменная offset на сколько недель мы с�
       "startDate": "2017-08-14T00:00:00",
       "endDate": "2017-08-20T00:00:00",
       "tasks": []
+    }
+  }
+}
+```
+
+### Переводим наши таски
+Давай научимся двигать наши таски из backlog в dashboard и по dashboard. Т.к. объект TaskObject у нас не содержит поля
+iteration_id, мы будем удалять его из наших объектов.
+
+**enums.task_status**
+```python
+class MovePositionTask(Enum):
+
+    BACK = -1
+    FORWARD = 1
+```
+
+**mutations.move_task**
+```python
+class MoveTask(Mutation):
+
+    class Input:
+        task_id = Argument(Int)
+        position = Argument(MovePositionTask)
+        iteration_id = Argument(Int)
+        iteration_date = DateTime()
+
+    task = Field(lambda: TaskObject)
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        store = context.get('store')
+        id, position, iteration, date = get_args_by_list(
+            args,
+            ['task_id', 'position', 'iteration_id', 'iteration_date']
+        )
+        record = store.get(id)
+        previous_status = record.status
+        record.update(status=record.status + position)
+
+        from_backlog, to_backlog = get_directions(next=record.status, prev=previous_status)
+        if from_backlog:
+            if iteration:
+                record.update(iteration_id=iteration)
+            else:
+                date = get_datetime(date)
+                iteration = store.create_iteration(start_date=date).id
+                record.update(iteration_id=iteration)
+        elif to_backlog:
+            record.update(iteration_id=None)
+
+        task_data = record.as_dict
+        if 'iteration_id' in task_data.keys():
+            task_data.pop('iteration_id')
+        task = TaskObject(**task_data)
+        return MoveTask(task=task)
+```
+
+**mutations.__init__**
+```python
+class Mutations(ObjectType):
+    create_task = CreateTask.Field()
+    move_task = MoveTask.Field()
+```
+
+Теперь подвигаем наши задачи вперед
+
+```graphql
+mutation moveTaskForward($taskId: Int) {
+  moveTask(taskId: $taskId, position: FORWARD) {
+    task {
+      ... taskData
+    }
+  }
+}
+```
+Variables
+```json
+{
+  "taskId": 1
+}
+```
+
+Ответ
+```json
+{
+  "errors": null,
+  "data": {
+    "moveTask": {
+      "task": {
+        "id": 1,
+        "status": "TODO"
+      }
     }
   }
 }
