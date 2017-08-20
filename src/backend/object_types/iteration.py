@@ -13,11 +13,11 @@ class IterationObject(graphene.ObjectType):
     def resolve_tasks(self, args, context, info):
         result = []
         if self.id:
-            tasks = context['store'].all_by_kind('task')
+            tasks = context['store'].tasks
             result.extend([
                 TaskObject(**task.as_dict)
                 for task
-                in filter(lambda t: t.as_dict.get('iteration_id', None) == self.id, tasks)
+                in filter(lambda t: t.iteration_id == self.id, tasks)
             ])
         return result
 
