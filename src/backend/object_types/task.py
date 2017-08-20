@@ -13,16 +13,17 @@ class TaskObject(graphene.ObjectType, TaskFields):
     parent = graphene.Field(lambda: TaskObject)
     childs = graphene.List(lambda: TaskObject)
 
-    # TODO: сделать нормыльный метод для создания таска
     def resolve_parent(self, args, context, info):
         store = context.get('store')
         record = store.get(self.id)
-        task_data = record.as_dict
-        if 'iteration_id' in task_data.keys():
-            task_data.pop('iteration_id')
-        if 'parent_id' in task_data.keys():
-            task_data.pop('parent')
-        return TaskObject(**task_data)
+        if record and record.parent_id:
+            parent_record = store.get(record.parent_id)
+            return TaskObject(**parent_record.as_dict)
 
     def resolve_childs(self, args, context, info):
-        pass
+        tasks = context['store'].all_by_kind('task')
+        result = [
+            TaskObject(**task.as_dict)
+            for task in filter(lambda t: t.parent_id  == self.id, tasks)
+        ]
+        return result
