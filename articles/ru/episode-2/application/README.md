@@ -1,10 +1,10 @@
-[Назад]()|
+[Назад](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/README.md#create-application)|
 -----|
 
-Для обработки входящих запросов мы будем использовать **tornado**, у которого будет один единственный обработчик. Тут есть пара моментов
-не указанных в документации. Когда я писал через тесты то передавал просто **query** в теле запроса, как строку (пример ```query { hello }```),
-в последтвии когда подключил **GraphiQL**, увидел что там прилетает ```application/json``` и он в себя уже включает несколько полей, это **query** (сам запрос),
-**variables** (опционально, переменные запроса, это объект) и **operationName** (опционально, название запроса, ```query helloQuery { hello }```). Мы получаем эти поля и передаем в наш
+Для обработки входящих запросов мы будем использовать [tornado](http://www.tornadoweb.org/en/stable/index.html), у которого будет один единственный обработчик. Тут есть пара моментов
+не указанных в документации. Когда я писал через тесты то передавал просто [query](http://graphql.org/learn/queries/) в теле запроса, как строку (пример ```query { hello }```),
+в последтвии когда подключил [GraphiQL](https://github.com/graphql/graphiql), увидел что там прилетает ```application/json``` и он в себя уже включает несколько полей, это [query](http://graphql.org/learn/queries/) (сам запрос),
+[variables](http://graphql.org/learn/queries/#variables) (опционально, переменные запроса, это объект) и [operationName](http://graphql.org/learn/queries/#operation-name) (опционально, название запроса, ```query helloQuery { hello }```). Мы получаем эти поля и передаем в наш
 executor.
 
 [query.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/query.py)
@@ -78,9 +78,9 @@ def make_app():
 
 ![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/helloQuery.gif)
 
-Отличительной особеностью GraphQL и его реализаций, является самодокументация
-нашего API. В нашем случае я использую GraphiQL, он как в последствии
-оказались в PyCharm можно поставить плагин и настроить его для получения
+Отличительной особеностью [GraphQL](http://graphql.org/learn/) и его реализаций, является [самодокументация](http://graphql.org/learn/introspection/)
+нашего API. В нашем случае я использую [GraphiQL](https://github.com/graphql/graphiql), он как в последствии
+оказались в [PyCharm](https://www.jetbrains.com/pycharm/) можно поставить [плагин](https://plugins.jetbrains.com/plugin/8097-js-graphql) и настроить его для получения
 нашей схемы с сервера, пример можно посмотреть в репозитарии
 [graphql.config.json](https://github.com/totaki/graphql-learn/blob/develop/graphql.config.json)
 

@@ -97,34 +97,6 @@
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
 
 
-### Место жизни нашего приложения
-Для обработки входящих запросов мы будем использовать **tornado**, у которого будет один единственный обработчик. Тут есть пара моментов
-не указанных в документации. Когда я писал через тесты то передавал просто **query** в теле запроса, как строку (пример ```query { hello }```),
-в последтвии когда подключил **GraphiQL**, увидел что там прилетает ```application/json``` и он в себя уже включает несколько полей, это **query** (сам запрос),
-**variables** (опционально, переменные запроса, это объект) и **operationName** (опционально, название запроса, ```query helloQuery { hello }```). Мы получаем эти поля и передаем в наш
-executor.
-
-**main.GraphQLHandler.query_data**
-```python
-body = self.request.body.decode('utf-8')
-content_type = self.request.headers.get_list('Content-Type')[0]
-if 'application/json' in content_type:
-    data = json.loads(body)
-    query = data['query']
-    variables = data.get('variables', None)
-    operation_name = data.get('operationName', None)
-```
-
-**main.GraphQLHandler.get_response**
-```python 
-result = self.schema.execute(
-    query,
-    variable_values=variables,
-    context_value={'store': self.store},
-    operation_name=operation_name
-)
-```
-
 ### Создание задач
 Попробуем создать наши первые задачи. Сначала мы создадим класс **TaskFields** от **graphene.AbstractType**. **AbstractType** это фишка самого graphene, 
 он нам позволяет не писать каждый одни и теже поля для классов одной сущности. Например в данном случае у нас есть **TaskFields**:
