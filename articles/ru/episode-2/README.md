@@ -96,7 +96,7 @@ schema = graphene.Schema(query=Query)
 5. Мы должны сделать возможность переводить наши таски по статусам вперед назад при это при движении из бэклога если итерации нет
 то она создается.
 6. Мы должны на учится задавать родительский таск.
-7. Мы должны научиться добавлять юзеров.
+7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации
 
 
@@ -479,9 +479,98 @@ class TaskFields(graphene.AbstractType):
     title = graphene.String()
     description = graphene.String()
 
+
 class TaskObject(graphene.ObjectType, TaskFields):
     id = graphene.Int()
     status = graphene.Field(TaskStatus)
     parent = graphene.Field(lambda: TaskObject)
+    childs = graphene.List(lambda: TaskObject)
+
+    def resolve_parent(self, args, context, info):
+        store = context.get('store')
+        record = store.get(self.id)
+        if record and record.parent_id:
+            parent_record = store.get(record.parent_id)
+            return TaskObject(**parent_record.as_dict)
+
+    def resolve_childs(self, args, context, info):
+        tasks = context['store'].all_by_kind('task')
+        result = [
+            TaskObject(**task.as_dict)
+            for task in filter(lambda t: t.parent_id == self.id, tasks)
+        ]
+        return result
 ```
 
+**mutations.set_parent**
+```python
+class SetTaskParent(Mutation):
+
+    class Input:
+        parent_id = Argument(Int)
+        child_id = Argument(Int)
+
+    task = Field(lambda: TaskObject)
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        parent_id = args.get('parent_id')
+        child_id = args.get('child_id')
+        store = context.get('store')
+        record = store.get(child_id)
+        record.update(parent_id=parent_id)
+        task_data = record.as_dict
+        task = TaskObject(**task_data)
+        return SetTaskParent(task=task)
+```
+
+Как создали таски писать не буду, сразу на то как им установить родителя
+
+```graphql
+mutation setParentTask($parentId: Int, $childId: Int) {
+  setParent(parentId: $parentId, childId: $childId) {
+    task {
+      parent {
+        id
+        childs {
+          id
+        }
+      }
+    }
+  }
+}
+```
+
+Variables
+```json
+{
+  "parentId": 1,
+  "childId": 2
+}
+```
+
+Пример отверта
+```json
+{
+  "errors": null,
+  "data": {
+    "setParent": {
+      "task": {
+        "parent": {
+          "id": 1,
+          "childs": [
+            {
+              "id": 2
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+Вообще по мне то что мы можемь так циклически резолвит типы сами на себя мега крутая
+штука.
+
+
+### Предположим что каждая задача тоже хочеть владеть информацией о своей итерации
