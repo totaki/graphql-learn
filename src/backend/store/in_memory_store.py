@@ -5,12 +5,12 @@ class InMemoryStore(object):
     def __init__(self):
         self._store = {}
 
-    def create(self, kind, data=None, **kwargs):
+    def create(self, kind, data=None, record_class=Record, **kwargs):
         index = len(self._store.keys()) + 1
         if data:
-            record = Record(index, kind, data)
+            record = record_class(index, kind, data)
         else:
-            record = Record(index, kind, kwargs)
+            record = record_class(index, kind, kwargs)
         self._store[index] = record
         return record
 

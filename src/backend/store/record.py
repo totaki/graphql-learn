@@ -10,6 +10,8 @@ class RecordAttributeError(Exception):
 
 class Record(object):
 
+    exclude_dct_fields = ()
+
     def __init__(self, index, kind, data=None):
         self.id = index
         self.kind = kind
@@ -40,4 +42,7 @@ class Record(object):
     def as_dict(self):
         dct = {'id': self.id}
         dct.update(self._data)
+        for field in self.exclude_dct_fields:
+            if field in dct.keys():
+                dct.pop(field)
         return dct
