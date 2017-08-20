@@ -2,6 +2,12 @@ import graphene
 from enums import TaskStatus
 
 
+def get_iteration_class():
+    from .iteration import IterationObject as iteration
+    globals()['IterationObject'] = iteration
+    return iteration
+
+
 class TaskFields(graphene.AbstractType):
     title = graphene.String()
     description = graphene.String()
@@ -12,6 +18,7 @@ class TaskObject(graphene.ObjectType, TaskFields):
     status = graphene.Field(TaskStatus)
     parent = graphene.Field(lambda: TaskObject)
     childs = graphene.List(lambda: TaskObject)
+    iteration = graphene.Field(get_iteration_class)
 
     def resolve_parent(self, args, context, info):
         store = context.get('store')
@@ -27,3 +34,6 @@ class TaskObject(graphene.ObjectType, TaskFields):
             for task in filter(lambda t: t.parent_id == self.id, tasks)
         ]
         return result
+
+    def resolve_iteration(self, args, context, info):
+        return IterationObject()
