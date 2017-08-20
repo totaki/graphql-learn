@@ -24,6 +24,6 @@ class TaskObject(graphene.ObjectType, TaskFields):
         tasks = context['store'].all_by_kind('task')
         result = [
             TaskObject(**task.as_dict)
-            for task in filter(lambda t: t.parent_id  == self.id, tasks)
+            for task in filter(lambda t: t.parent_id == self.id, tasks)
         ]
         return result
