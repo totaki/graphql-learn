@@ -42,7 +42,7 @@
 ![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/sheme.png)
 
 
-## Ну вот мы и добравлись до кода
+## Ну вот мы и добрались до кода
 #### Xранилище
 Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
 получать по ```id int```. Приложу [ссылку](https://github.com/totaki/graphql-learn/blob/develop/src/backend/store/__init__.py),
@@ -59,6 +59,13 @@
 [Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/application/README.md)
 
 ----
+
+#### Create tasks
+Создание задач. Здесь мы узнаем, как в [GraphQL](http://graphql.org/learn/) подошли
+к изменению данных, а также узнаем некоторые вспомогательные моменты.
+
+[Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/create_task/README.md)
+
 
 #### Создаем абстрактные классы
 Следующим делом мы создадим наши абстаркные классы, унаследованные от 
