@@ -66,35 +66,9 @@
 
 [Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/create_task/README.md)
 
-
-#### Создаем абстрактные классы
-Следующим делом мы создадим наши абстаркные классы, унаследованные от 
-[graphene.AbstractType](http://docs.graphene-python.org/en/latest/types/abstracttypes/). Они нужны нам для того
-чтобы мы могли одни и теже поля получать и передавать как в [graphene.ObjectType](http://docs.graphene-python.org/en/latest/types/objecttypes/)
-так и в [graphene.InputObjectType](http://docs.graphene-python.org/en/latest/types/mutations/)
-
-[Код с комментариями и результат](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/code-1.md)
-
-
-#### Создаем задачи
-Теперь создадим наш первый ```ObjectType``` ```TaskObject```, для него создадим ```mutation``` для создания, а также запрос
-на получение списка задач.
-
-[Код с комментариями и результат](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/code-2.md)
-
-#### Подвинем задачу в новую итерацию
-Логика такая мы передаем в мутацию id нашей задачи, id итерации из контекста и текущую дату. Мы ищем итерцаю сначала по id
-, потом по дате если не находим, тогда создаем новую. Если находим добавляем в список итераций. 
-
-
-#### Итерации
-Логика будет такая, мы изначально получаем наш текущую итерацию, если итерация с такой датой есть значит мы её отдаем, если 
-нет отдаем итерацию с пустым списком задач. Итерация считается созданной когда мы в нее добавили хотябы одну задачу.
+----
 
 Новые этапы.
-1. Первым делом надо показать как прикрутить graphql в handler и задать схему и передать контекст наш сторе (надо
-упомянуть про проблемы которые были с ide).
-2. Дальше мы должны добавить показать как нам добавить один таск, т.е. создание тасинфо, таск инпут и мутацию. Объяснить зачем нам абстрацкии
 3. Дальше мы должны создать бэклог резолвео для получения наших тастков.
 4. Мы должны создать дашбоард резолвер, для это надо добавить объект итерация со своей логикой, переключения между итерациями.
 5. Мы должны сделать возможность переводить наши таски по статусам вперед назад при это при движении из бэклога если итерации нет
@@ -103,101 +77,6 @@
 7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
 
-
-### Создание задач
-Попробуем создать наши первые задачи. Сначала мы создадим класс **TaskFields** от **graphene.AbstractType**. **AbstractType** это фишка самого graphene, 
-он нам позволяет не писать каждый одни и теже поля для классов одной сущности. Например в данном случае у нас есть **TaskFields**:
-
-**enums.task_status**
-```python
-class TaskStatus(Enum):
-    BACKLOG = 0
-    TODO = 1
-    IN_PROGRESS = 2
-    REVIEW = 3
-    FINISH = 4
-```
-
-**mutations.inputs.task_input**
-```python
-class TaskInput(InputObjectType, TaskFields):
-    pass
-```
-Данные поля нам понадобятся для самого **ObjectType** (сам объект запроса)и **InputObjectType** (данный класс нужен чтобы указать какие поля мы можем получить в нашей мутации)
-
-**object_types.task**
-```python
-class TaskFields(graphene.AbstractType):
-    title = graphene.String()
-    description = graphene.String()
-
-class TaskObject(graphene.ObjectType, TaskFields):
-    id = graphene.Int()
-    status = graphene.Field(TaskStatus)
-```
-
-**mutations.create_task**
-```python
-class CreateTask(Mutation):
-
-    class Input:
-        task_data = Argument(TaskInput)
-
-    task = Field(TaskObject)
-
-    @staticmethod
-    def mutate(root, args, context, info):
-        store = context.get('store')
-        task_data = args.get('task_data')
-        task_data['status'] = TaskStatus.BACKLOG.value
-        record = store.create_task(data=task_data)
-        task = TaskObject(**record.as_dict)
-        return CreateTask(task=task)
-```
-
-**mutations.__init__**
-```python
-class Mutations(ObjectType):
-    create_task = CreateTask.Field()
-```
-
-Теперь мы можем выполнять запросы на создание нашей задачи
-
-```graphql
-mutation createTask($title: String, $description: String) {
-  createTask(taskData: {title: $title, description: $description}) {
-    task {
-      ... taskData
-    }
-  }
-}
-
-fragment taskData on TaskObject {
-  id
-  status
-}
-```
-Variables
-```json
-{
-  "title": "Task title",
-  "description": "Task description"
-}
-```
-В ответ получим
-```json
-{
-  "errors": null,
-  "data": {
-    "createTask": {
-      "task": {
-        "id": 1,
-        "status": "BACKLOG"
-      }
-    }
-  }
-}
-```
 
 ### Получение backlog
 Тут все просто мы создаем резолвер **resolve_backlog** который возвращает из БД объекты, у которых

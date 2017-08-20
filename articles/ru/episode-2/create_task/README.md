@@ -38,7 +38,54 @@ class TaskObject(graphene.ObjectType, TaskFields):
     status = graphene.Field(TaskStatus)
 ```
 
-В [GraphQL](http://graphql.org/learn/) за обработку запросов отвечают два главных
-компонента [query](http://graphql.org/learn/queries/) и [mutation](http://graphql.org/learn/queries/#mutations).
+В [GraphQL](http://graphql.org/learn/) за обработку запросов отвечают два главных 
+компонента 
+[query](http://graphql.org/learn/queries/) 
+и 
+[mutation](http://graphql.org/learn/queries/#mutations). 
+В данном случае нас интересуют 
+[mutation](http://graphql.org/learn/queries/#mutations), которому в обязательном 
+порядке надо создавать внутренний класс 
+[Input](http://docs.graphene-python.org/en/latest/types/mutations/#inputfields-and-inputobjecttypes), атрибутами которого 
+буду поля, которые мы можем передавать в нашу 
+[mutation](http://docs.graphene-python.org/en/latest/types/mutations/).
+Атрибут как и любой объект в GraphQL может быть любой вложенности, это может 
+быть 
+[graphene.InputObjectType](http://docs.graphene-python.org/en/latest/types/mutations/#inputfields-and-inputobjecttypes),
+[Scalar](http://docs.graphene-python.org/en/latest/types/scalars/), 
+или встроеный тип. 
+
+Атрибуты класса мутации
+являются, тем что мы можем вернуть в ответ на запрос, это может быть вновь 
+созданный объект, 
+[graphene.ObjectType](http://docs.graphene-python.org/en/latest/types/objecttypes/),
+[Scalar](http://docs.graphene-python.org/en/latest/types/scalars/),
+или встроеный тип. 
+
+[mutations/inputs/task_input.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/mutations/inputs/task_input.py)
+```python
+class TaskInput(InputObjectType, TaskFields):
+    pass
+```
+
+[mutations/create_task.py](https://github.com/totaki/graphql-learn/blob/develop/src/backend/mutations/create_task.py)
+```python
+class CreateTask(Mutation):
+
+    class Input:
+        task_data = Argument(TaskInput)
+
+    task = Field(TaskObject)
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        store = context.get('store')
+        task_data = args.get('task_data')
+        task_data['status'] = TaskStatus.BACKLOG.value
+        record = store.create_task(data=task_data)
+        task = TaskObject(**record.as_dict)
+        return CreateTask(task=task)
+```
+ 
 
  

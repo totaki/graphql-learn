@@ -1,0 +1,12 @@
+mutation createTask($title: String, $description: String) {
+  createTask(taskData: {title: $title, description: $description}) {
+    task {
+      ... taskData
+    }
+  }
+}
+
+fragment taskData on TaskObject {
+  id
+  status
+}
