@@ -43,4 +43,4 @@ class Query(graphene.ObjectType):
 
 В результате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/backlog/query.graphql)
 
-![Backlog](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/create_task/getBacklog.gif)
+![Backlog](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/backlog/getBacklog.gif)
