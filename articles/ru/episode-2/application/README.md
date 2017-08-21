@@ -76,7 +76,7 @@ def make_app():
 
 В резултате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/application/query.graphql)
 
-![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/helloQuery.gif)
+![Hello world](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/helloQuery.gif)
 
 Отличительной особеностью [GraphQL](http://graphql.org/learn/) и его реализаций, является [самодокументация](http://graphql.org/learn/introspection/)
 нашего API. В нашем случае я использую [GraphiQL](https://github.com/graphql/graphiql), он как в последствии
@@ -84,5 +84,5 @@ def make_app():
 нашей схемы с сервера, пример можно посмотреть в репозитарии
 [graphql.config.json](https://github.com/totaki/graphql-learn/blob/develop/graphql.config.json)
 
-![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/docHello.gif) 
+![Documentation](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/docHello.gif) 
  

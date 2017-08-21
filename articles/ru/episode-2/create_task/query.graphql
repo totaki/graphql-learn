@@ -1,5 +1,6 @@
 mutation createTask($title: String, $description: String) {
-  createTask(taskData: {title: $title, description: $description}) {
+  createTask(taskData: {title: $title, description: $description})
+  {
     task {
       ... taskData
     }

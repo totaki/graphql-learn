@@ -86,6 +86,11 @@ class CreateTask(Mutation):
         task = TaskObject(**record.as_dict)
         return CreateTask(task=task)
 ```
- 
+
+В резултате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/create_task/query.graphql)
+
+![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/create_task/createTask.gif)
+
+Тут можете увидеть тип fragment в запросе позже, я объясню зачем это.
 
  
