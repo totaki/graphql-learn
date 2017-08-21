@@ -1,0 +1,10 @@
+query getBacklog {
+  backlog {
+    ... taskData
+  }
+}
+
+fragment taskData on TaskObject {
+  id
+  status
+}

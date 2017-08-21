@@ -74,7 +74,7 @@ def make_app():
     ], debug=options.debug, schema=schema, store=Store())
 ```
 
-В резултате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/application/query.graphql)
+В результате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/application/query.graphql)
 
 ![Hello world](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/application/helloQuery.gif)
 

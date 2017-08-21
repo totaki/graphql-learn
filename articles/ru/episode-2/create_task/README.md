@@ -87,7 +87,7 @@ class CreateTask(Mutation):
         return CreateTask(task=task)
 ```
 
-В резултате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/create_task/query.graphql)
+В результате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/create_task/query.graphql)
 
 ![Create tasks](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/create_task/createTask.gif)
 

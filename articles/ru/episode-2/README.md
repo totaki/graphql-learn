@@ -68,8 +68,15 @@
 
 ----
 
+#### Get backlog
+Теперь настало время сделать наш первый resolver, этот метод как раз отвечает за получение данных конкретного поля.
+
+[Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/backlog/README.md)
+
+----
+
+
 Новые этапы.
-3. Дальше мы должны создать бэклог резолвео для получения наших тастков.
 4. Мы должны создать дашбоард резолвер, для это надо добавить объект итерация со своей логикой, переключения между итерациями.
 5. Мы должны сделать возможность переводить наши таски по статусам вперед назад при это при движении из бэклога если итерации нет
 то она создается.
@@ -77,58 +84,6 @@
 7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
 
-
-### Получение backlog
-Тут все просто мы создаем резолвер **resolve_backlog** который возвращает из БД объекты, у которых
-нет атрибута iteration_id или он равен None. Мы также указываем, что у нас это список
-объектов.
-
-**query**
-```python
-class Query(graphene.ObjectType):
-
-    backlog_description = '''
-    This field include all tasks without iteration
-    '''
-    backlog = graphene.List(
-        TaskObject, description=backlog_description
-    )
-
-    def resolve_backlog(self, args, context, info):
-        tasks = context['store'].tasks
-        return [
-            TaskObject(**task.as_dict)
-            for task in filter(lambda t: not t.iteration_id, tasks)
-        ]
-```
-
-Запрос будет выглядить 
-```graphql
-query getBacklog {
-  backlog {
-    ... taskData
-  }
-}
-```
-
-В ответ мы получим 
-```json
-{
-  "errors": null,
-  "data": {
-    "backlog": [
-      {
-        "id": 1,
-        "status": "BACKLOG"
-      },
-      {
-        "id": 2,
-        "status": "BACKLOG"
-      }
-    ]
-  }
-}
-```
 
 ### Работа с итерациями
 В объекте итерации мы не будем хранить дату окончания итерации, а вычислять ее на лету, если нам надо это поле. Также мы не храним
