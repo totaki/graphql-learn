@@ -77,8 +77,7 @@
 
 #### Get dashboard
 Перейдем к следующему нашему resolver. Тут не будет новых концепций, я просто
-хочу показать, как удобно сделаны вычисляемые поля и покажу как удобно пользоватся
-[GraphiQL](https://github.com/graphql/graphiql)
+хочу показать, как удобно сделаны вычисляемые поля.
 
 [Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/dashboard/README.md)
 

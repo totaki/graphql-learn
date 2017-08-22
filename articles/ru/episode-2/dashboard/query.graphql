@@ -1,0 +1,22 @@
+query getCurrentIteration {
+    dashboard(offset: 0) {
+        ... on Iteration
+    }
+}
+
+query getNextIteration {
+    dashboard(offset: 1) {
+        ... on Iteration
+    }
+}
+
+query getPreviousIteration {
+    dashboard(offset: -1) {
+        ... on Iteration
+    }
+}
+
+fragment Iteration on IterationObject {
+    startDate
+    endDate
+}
