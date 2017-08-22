@@ -83,107 +83,20 @@
 
 ----
 
+#### Move task
+Эта часть является вспомогательнной для нашего приложения. Тут показано, как вообще удобно прятать логику
+работы приложения в resolver или mutations на примере изменения статуса задачи
+
+
+[Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/move_task/README.md)
+
+----
 
 Новые этапы.
 
-5. Мы должны сделать возможность переводить наши таски по статусам вперед назад при это при движении из бэклога если итерации нет
-то она создается.
 6. Мы должны на учится задавать родительский таск.
 7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
-
-### Переводим наши таски
-Давай научимся двигать наши таски из backlog в dashboard и по dashboard. Т.к. объект TaskObject у нас не содержит поля
-iteration_id, мы будем удалять его из наших объектов.
-
-**enums.task_status**
-```python
-class MovePositionTask(Enum):
-
-    BACK = -1
-    FORWARD = 1
-```
-
-**mutations.move_task**
-```python
-class MoveTask(Mutation):
-
-    class Input:
-        task_id = Argument(Int)
-        position = Argument(MovePositionTask)
-        iteration_id = Argument(Int)
-        iteration_date = DateTime()
-
-    task = Field(lambda: TaskObject)
-
-    @staticmethod
-    def mutate(root, args, context, info):
-        store = context.get('store')
-        id, position, iteration, date = get_args_by_list(
-            args,
-            ['task_id', 'position', 'iteration_id', 'iteration_date']
-        )
-        record = store.get(id)
-        previous_status = record.status
-        record.update(status=record.status + position)
-
-        from_backlog, to_backlog = get_directions(next=record.status, prev=previous_status)
-        if from_backlog:
-            if iteration:
-                record.update(iteration_id=iteration)
-            else:
-                date = get_datetime(date)
-                iteration = store.create_iteration(start_date=date).id
-                record.update(iteration_id=iteration)
-        elif to_backlog:
-            record.update(iteration_id=None)
-
-        task_data = record.as_dict
-        if 'iteration_id' in task_data.keys():
-            task_data.pop('iteration_id')
-        task = TaskObject(**task_data)
-        return MoveTask(task=task)
-```
-
-**mutations.__init__**
-```python
-class Mutations(ObjectType):
-    create_task = CreateTask.Field()
-    move_task = MoveTask.Field()
-```
-
-Теперь подвигаем наши задачи вперед
-
-```graphql
-mutation moveTaskForward($taskId: Int) {
-  moveTask(taskId: $taskId, position: FORWARD) {
-    task {
-      ... taskData
-    }
-  }
-}
-```
-Variables
-```json
-{
-  "taskId": 1
-}
-```
-
-Ответ
-```json
-{
-  "errors": null,
-  "data": {
-    "moveTask": {
-      "task": {
-        "id": 1,
-        "status": "TODO"
-      }
-    }
-  }
-}
-```
 
 ### Древовидная структура тасков
 Добавим нашем задач родительскую задачу и задачи потомки. Если мы хотим указать что не которые поля являются теми же

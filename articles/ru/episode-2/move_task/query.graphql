@@ -1,0 +1,37 @@
+mutation moveTaskForward($taskId: Int) {
+  moveTask(taskId: $taskId, position: FORWARD) {
+    task {
+      ...taskData
+    }
+  }
+}
+
+mutation moveTaskBack($taskId: Int) {
+  moveTask(taskId: $taskId, position: BACK) {
+    task {
+      ...taskData
+    }
+  }
+}
+
+mutation createTask($title: String, $description: String) {
+  createTask(taskData: {title: $title, description: $description}) {
+    task {
+      ...taskData
+    }
+  }
+}
+
+query getDashboard {
+  dashboard (offset: 0){
+    id
+    tasks {
+      ... taskData
+    }
+  }
+}
+
+fragment taskData on TaskObject {
+  id
+  status
+}
