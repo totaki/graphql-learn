@@ -1,7 +1,0 @@
-query getTasks {
-  backlog {
-    id
-    title
-    iterationId
-  }
-}
