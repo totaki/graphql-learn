@@ -86,114 +86,11 @@
 
 Новые этапы.
 
-4. Мы должны создать дашбоард резолвер, для это надо добавить объект итерация со своей логикой, переключения между итерациями.
 5. Мы должны сделать возможность переводить наши таски по статусам вперед назад при это при движении из бэклога если итерации нет
 то она создается.
 6. Мы должны на учится задавать родительский таск.
 7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
-
-
-### Работа с итерациями
-В объекте итерации мы не будем хранить дату окончания итерации, а вычислять ее на лету, если нам надо это поле. Также мы не храним
-наш объект пока в нем нет ни одной итерции.
-
-**object_types.iteration**
-```python
-class IterationObject(graphene.ObjectType):
-    id = graphene.Int()
-    start_date = DateTime()
-    tasks = graphene.List(TaskObject)
-    end_date = DateTime()
-
-    def resolve_tasks(self, args, context, info):
-        result = []
-        if self.id:
-            tasks = context['store'].all_by_kind('task')
-            result.extend([
-                TaskObject(**task.as_dict)
-                for task
-                in filter(lambda t: t.as_dict.get('iteration_id', None) == self.id, tasks)
-            ])
-        return result
-
-    def resolve_end_date(self, args, context, info):
-        return self.start_date + dt.timedelta(days=6)
-```
-
-**query**
-```python
-class Query(graphene.ObjectType):
-
-    ...
-
-    dashboard = graphene.Field(
-        IterationObject,
-        iteration_id=graphene.Int(),
-        offset=graphene.Int()
-    )
-
-
-    def resolve_dashboard(self, args, context, info):
-        iteration_dt = get_iteration_datetime(args)
-        iterations = context['store'].iterations
-        filtered_iterations = list(filter(lambda i: i.start_date == iteration_dt, iterations))
-        if filtered_iterations:
-            return IterationObject(**filtered_iterations[0].as_dict)
-        else:
-            return IterationObject(id=None, start_date=iteration_dt)
-```
-
-**utils**
-```python
-def get_datetime(datetime=None, offset=0):
-    if not datetime:
-        datetime = dt.datetime.utcnow()
-    delta = calendar.weekday(datetime.year, datetime.month, datetime.day)
-    _ = datetime - dt.timedelta(days=delta) + dt.timedelta(days=offset * 7)
-    return dt.datetime(_.year, _.month, _.day)
-
-
-def get_iteration_datetime(args):
-    return get_datetime(
-        datetime=args.get('date', None),
-        offset=args.get('offset', None)
-    )
-```
-
-Пример запроса
-```graphql
-query getDashboard ($offset: Int){
-  dashboard (offset: $offset){
-    id
-    startDate
-    endDate
-    tasks {
-      ... taskData
-    }
-  }
-}
-```
-Variables, переменная offset на сколько недель мы сместились от текущей даты итерации, дата итерации это первый день недели
-```json
-{
-  "offset": 0
-}
-```
-Ответ
-```json
-{
-  "errors": null,
-  "data": {
-    "dashboard": {
-      "id": null,
-      "startDate": "2017-08-14T00:00:00",
-      "endDate": "2017-08-20T00:00:00",
-      "tasks": []
-    }
-  }
-}
-```
 
 ### Переводим наши таски
 Давай научимся двигать наши таски из backlog в dashboard и по dashboard. Т.к. объект TaskObject у нас не содержит поля
