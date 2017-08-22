@@ -59,4 +59,4 @@ class Mutations(ObjectType):
 
 В результате мы можем выполнить [запрос](https://github.com/totaki/graphql-learn/blob/develop/articles/ru/episode-2/move_task/query.graphql)
 
-![Move task(https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/move_task/moveTask.gif)
+![Move task](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/ru/episode-2/move_task/moveTask.gif)
