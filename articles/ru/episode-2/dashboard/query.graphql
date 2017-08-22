@@ -1,18 +1,18 @@
 query getCurrentIteration {
     dashboard(offset: 0) {
-        ... on Iteration
+        ... Iteration
     }
 }
 
 query getNextIteration {
     dashboard(offset: 1) {
-        ... on Iteration
+        ... Iteration
     }
 }
 
 query getPreviousIteration {
     dashboard(offset: -1) {
-        ... on Iteration
+        ... Iteration
     }
 }
 
