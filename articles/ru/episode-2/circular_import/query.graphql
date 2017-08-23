@@ -1,0 +1,26 @@
+mutation createTask {
+  createTask {
+    task {
+      ...Task
+    }
+  }
+}
+
+mutation moveTaskForward($taskId: Int) {
+  moveTask(taskId: $taskId, position: FORWARD) {
+    task {
+      ...Task
+    }
+  }
+}
+
+fragment Task on TaskObject {
+  id
+  status
+  iteration {
+    id
+    tasks {
+      id
+    }
+  }
+}
