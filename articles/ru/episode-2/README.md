@@ -36,12 +36,6 @@
 ![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/deploy_full_width.png)
 
 
-## Cхема
-Для того чтобы понять какие сущности нам нужны, нарисуем схему.
-
-![Image of this Article](https://raw.githubusercontent.com/totaki/graphql-learn/develop/articles/sheme.png)
-
-
 ## Ну вот мы и добрались до кода
 #### Xранилище
 Первым делом мы создадим хранилище для наших данных, сделаем просто in-memory хранилище, в котором мы сможем наши записи
