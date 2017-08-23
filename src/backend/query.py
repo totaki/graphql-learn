@@ -1,4 +1,5 @@
 import graphene
+from graphql import GraphQLError
 from object_types import *
 from utils import get_iteration_datetime
 
@@ -18,6 +19,8 @@ class Query(graphene.ObjectType):
         offset=graphene.Int()
     )
 
+    error = graphene.String()
+
     def resolve_backlog(self, args, context, info):
         tasks = context['store'].tasks
         return [
@@ -33,3 +36,6 @@ class Query(graphene.ObjectType):
             return IterationObject(**filtered_iterations[0].as_dict)
         else:
             return IterationObject(id=None, start_date=iteration_dt)
+
+    def resolve_error(self, *args):
+        return GraphQLError('Custom application error')

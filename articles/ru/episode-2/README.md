@@ -112,7 +112,15 @@
 
 ----
 
+#### Errors
+Когда приходит ответ от нашего [GraphQL](http://graphql.org) сервера, он содержит два поля, ```errors``` и ```data```.
+Как возвращать нужную нам ```data``` мы разобрались, теперь в конце посмотрим как нам
+вернуть ```errors```.
 
-Новые этапы.
+[Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/errors/README.md)
 
-8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
+----
+
+На этом я заканчиваю второй эпизод, надеюсь то, что тут изложенно позволит вам
+безболезненно перейти с REST API на [GraphQL](http://graphql.org) на стороне сервера.
+А в [следующем эпизоде](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-3/README.md)```TODO``` мы уже будем прикручить фронт к нашему приложению
