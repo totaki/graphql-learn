@@ -92,115 +92,21 @@
 
 ----
 
+#### Tree tasks
+Что мне нравится в [GraphQL](http://graphql.org), так это resolvers, они позволяет
+нам из одного объекта получить доступ (если есть связь в промежуточных конечно)
+к другому на противополжном конце бизнес-логики. Это я и продемонстрирую.
+
+[Перейти](https://github.com/totaki/graphql-learn/tree/develop/articles/ru/episode-2/tree_tasks/README.md)
+
+----
+
+
+
 Новые этапы.
 
-6. Мы должны на учится задавать родительский таск.
 7. Мы должны сделать что задачи также знали об итерации.
 8. Сделать отсылку ошибок валидации (в grapqhl.error есть специальные ошибки)
-
-### Древовидная структура тасков
-Добавим нашем задач родительскую задачу и задачи потомки. Если мы хотим указать что не которые поля являются теми же
-объектами что и сам объект мы должны просто указать ```lambda: T```
-
-**object_types.task**
-```python
-class TaskFields(graphene.AbstractType):
-    title = graphene.String()
-    description = graphene.String()
-
-
-class TaskObject(graphene.ObjectType, TaskFields):
-    id = graphene.Int()
-    status = graphene.Field(TaskStatus)
-    parent = graphene.Field(lambda: TaskObject)
-    childs = graphene.List(lambda: TaskObject)
-
-    def resolve_parent(self, args, context, info):
-        store = context.get('store')
-        record = store.get(self.id)
-        if record and record.parent_id:
-            parent_record = store.get(record.parent_id)
-            return TaskObject(**parent_record.as_dict)
-
-    def resolve_childs(self, args, context, info):
-        tasks = context['store'].all_by_kind('task')
-        result = [
-            TaskObject(**task.as_dict)
-            for task in filter(lambda t: t.parent_id == self.id, tasks)
-        ]
-        return result
-```
-
-**mutations.set_parent**
-```python
-class SetTaskParent(Mutation):
-
-    class Input:
-        parent_id = Argument(Int)
-        child_id = Argument(Int)
-
-    task = Field(lambda: TaskObject)
-
-    @staticmethod
-    def mutate(root, args, context, info):
-        parent_id = args.get('parent_id')
-        child_id = args.get('child_id')
-        store = context.get('store')
-        record = store.get(child_id)
-        record.update(parent_id=parent_id)
-        task_data = record.as_dict
-        task = TaskObject(**task_data)
-        return SetTaskParent(task=task)
-```
-
-Как создали таски писать не буду, сразу на то как им установить родителя
-
-```graphql
-mutation setParentTask($parentId: Int, $childId: Int) {
-  setParent(parentId: $parentId, childId: $childId) {
-    task {
-      parent {
-        id
-        childs {
-          id
-        }
-      }
-    }
-  }
-}
-```
-
-Variables
-```json
-{
-  "parentId": 1,
-  "childId": 2
-}
-```
-
-Пример отверта
-```json
-{
-  "errors": null,
-  "data": {
-    "setParent": {
-      "task": {
-        "parent": {
-          "id": 1,
-          "childs": [
-            {
-              "id": 2
-            }
-          ]
-        }
-      }
-    }
-  }
-}
-```
-Вообще по мне то что мы можемь так циклически резолвит типы сами на себя мега крутая
-штука.
-
 
 ### Избавляемся от циклического импорта
 Тут тоже создадетли graphql позаботились об этом. Если мы вместо типа передадим строку в наш field,

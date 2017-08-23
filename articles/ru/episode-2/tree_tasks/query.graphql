@@ -1,0 +1,24 @@
+mutation createTask {
+  createTask {
+    task {
+      id
+      parent
+    }
+  }
+}
+
+mutation setParentTask($parentId: Int, $childId: Int) {
+  setParent(parentId: $parentId, childId: $childId) {
+    task {
+      id
+      parent {
+        id
+        childs {
+          id
+        }
+      }
+    }
+  }
+}
+
+
