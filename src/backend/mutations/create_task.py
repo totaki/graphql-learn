@@ -14,7 +14,7 @@ class CreateTask(Mutation):
     @staticmethod
     def mutate(root, args, context, info):
         store = context.get('store')
-        task_data = args.get('task_data')
+        task_data = args.get('task_data', {})
         task_data['status'] = TaskStatus.BACKLOG.value
         record = store.create_task(data=task_data)
         task = TaskObject(**record.as_dict)
