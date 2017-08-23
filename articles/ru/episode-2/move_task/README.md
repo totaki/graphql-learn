@@ -32,7 +32,9 @@ class MoveTask(Mutation):
         previous_status = record.status
         record.update(status=record.status + position)
 
-        from_backlog, to_backlog = get_directions(next=record.status, prev=previous_status)
+        from_backlog, to_backlog = get_directions(
+            next=record.status, prev=previous_status
+        )
         if from_backlog:
             if iteration:
                 record.update(iteration_id=iteration)
@@ -43,10 +45,7 @@ class MoveTask(Mutation):
         elif to_backlog:
             record.update(iteration_id=None)
 
-        task_data = record.as_dict
-        if 'iteration_id' in task_data.keys():
-            task_data.pop('iteration_id')
-        task = TaskObject(**task_data)
+        task = TaskObject(**record.as_dict)
         return MoveTask(task=task)
 ```
 
