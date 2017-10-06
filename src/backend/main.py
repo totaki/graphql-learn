@@ -7,7 +7,7 @@ from mutations import Mutations
 from store import Store
 from query import Query
 
-
+# Some changes for PR
 define("debug", default=True)
 define("port", default=10080)
 
